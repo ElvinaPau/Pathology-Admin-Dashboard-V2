@@ -3,7 +3,7 @@ import "../css/AdminLogin.css";
 import { Link } from "react-router-dom";
 import HtaaQLogo from "../assets/HtaaQ-logo.png";
 
-function AdminLogin() {
+function AdminSetPassword() {
   return (
     <div className="admin-login-container">
       <div className="admin-htaaq-logo-image-container">
@@ -14,24 +14,13 @@ function AdminLogin() {
 
       <div className="admin-login-form-container">
         <div className="admin-login-bg">
-          <h2>Admin Login</h2>
+          <h2>Set Password</h2>
 
-          <div className="login-des">
-            <p>
-              Doesn’t have an account yet?{" "}
-              <Link to="/admin-signup" style={{ color: "blue" }}>
-                Sign up
-              </Link>
-            </p>
-          </div>
-
-          <div className="login-form-text">
-            <label>Email Address</label>
-            <input
-              className="input-textbox"
-              type="email"
-              placeholder="abc@example.com"
-            />
+          <div style={{ marginTop: "5px" }}>
+            You’re one step closer! Set a strong password with at least{" "}
+            <strong>8 characters</strong>, including <strong>uppercase</strong>,{" "}
+            <strong>lowercase</strong>, <strong>number</strong>, and{" "}
+            <strong>symbol</strong>.
           </div>
 
           <div className="login-form-text">
@@ -43,10 +32,13 @@ function AdminLogin() {
             />
           </div>
 
-          <div style={{ marginTop: "10px" }}>
-            <Link to="/admin-forgot-password" style={{ color: "blue" }}>
-              Forgot Password?
-            </Link>
+          <div className="login-form-text">
+            <label>Re-enter Password</label>
+            <input
+              className="input-textbox"
+              type="password"
+              placeholder="Enter 8 characters or more"
+            />
           </div>
 
           <button className="login-btn">LOGIN</button>
@@ -56,4 +48,4 @@ function AdminLogin() {
   );
 }
 
-export default AdminLogin;
+export default AdminSetPassword;

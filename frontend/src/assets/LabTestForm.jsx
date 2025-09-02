@@ -116,7 +116,7 @@ function LabTestForm({ onRemove, isFirst }) {
               onChange={(e) =>
                 setFormData({ ...formData, sampleVolume: e.target.value })
               }
-              rows={2}
+              rows={4}
               style={{ resize: "vertical" }}
             />
           </div>

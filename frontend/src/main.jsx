@@ -12,6 +12,7 @@ import BasicForm from "./assets/BasicForm";
 import LabTestForm from "./assets/LabTestForm";
 import { ImageUploader } from "./assets/ImageUploader";
 import ContainerForm from "./assets/ContainerForm";
+import AdminSetPassword from "./pages/AdminSetPassword";
 
 
 ReactDOM.createRoot(document.getElementById("root")).render(
@@ -28,6 +29,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         <Route path="/test-form" element={<LabTestForm />} />
         <Route path="/image-uploader" element={<ImageUploader />} />
         <Route path="/container-form" element={<ContainerForm />} />
+        <Route path="/set-pass" element={<AdminSetPassword />} />
 
       </Routes>
     </BrowserRouter>
