@@ -1,0 +1,35 @@
+.resizable-image-wrapper {
+  display: flex;
+  justify-content: center; /* default center */
+  width: 100%;
+  position: relative; /* for resize handle */
+}
+
+.image-align-left {
+  justify-content: flex-start;
+}
+
+.image-align-center {
+  justify-content: center;
+}
+
+.image-align-right {
+  justify-content: flex-end;
+}
+
+.resizable-image-wrapper img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Resize handle */
+.resize-handle {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 12px;
+  height: 12px;
+  background: #87cefa;
+  cursor: se-resize;
+}

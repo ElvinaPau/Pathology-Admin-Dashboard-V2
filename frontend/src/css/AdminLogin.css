@@ -1,0 +1,91 @@
+.admin-login-container {
+  display: flex;
+  flex-direction: row;
+  height: 90vh;
+  width: 99vw;
+}
+
+.admin-htaaq-logo-image-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.htaaq-logo-image {
+  width: 60%;
+  max-width: 500px;
+  height: auto;
+  object-fit: contain;
+}
+
+.admin-login-divider {
+  width: 1px;
+  height: 80%;
+  background-color: #000000;
+  align-self: center;
+}
+
+.admin-login-form-container {
+  flex: 1.5;
+  width: 400px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.admin-login-bg {
+  width: 100%;
+  max-width: 500px;
+  background-color: #ffeafd;
+  padding: 3rem;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+.login-text {
+  line-height: 0%;
+}
+
+.login-des {
+  line-height: 1;
+}
+
+.login-form-text {
+  margin-top: 35px;
+}
+
+.input-textbox {
+  border: none;
+  font-size: medium;
+  width: 100%;
+  max-width: 500px;
+  height: 30px;
+}
+
+.login-btn {
+  color: #ffffff;
+  font-weight: bold;
+  width: 100%;
+  max-width: 500px;
+  height: 40px;
+  font-size: medium;
+  background-color: #865bb8;
+  border: none;
+  margin-top: 40px;
+  padding: 1%;
+  cursor: pointer;
+}
+
+/* Responsive: Stack vertically on smaller screens */
+@media (max-width: 768px) {
+  .admin-login-container {
+    flex-direction: column;
+  }
+
+  .admin-login-form-container {
+    flex: none;
+    width: 100%;
+    height: auto;
+  }
+}

@@ -1,0 +1,31 @@
+.menu-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px;
+  border-bottom: 1px solid #ddd;
+  background-color: #f9f9f9;
+  flex-wrap: wrap;
+}
+
+.menu-bar button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 4px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.menu-bar button:hover {
+  background: #e0e0e0;
+}
+
+.menu-bar button.active {
+  background: #007bff;
+  color: white;
+}

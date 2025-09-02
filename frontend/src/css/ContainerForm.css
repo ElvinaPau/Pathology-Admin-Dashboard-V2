@@ -1,0 +1,14 @@
+.form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.form-header button {
+  background: none;
+}
+
+.form-header button:hover {
+  color: red;
+  background: none;
+}

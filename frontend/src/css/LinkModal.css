@@ -1,0 +1,26 @@
+.link-modal {
+  position: absolute;
+  background-color: white;
+  padding: 12px;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  width: 280px;
+}
+
+.link-modal h4 {
+  margin: 0 0 8px 0;
+}
+
+.link-modal input {
+  margin-bottom: 8px;
+  width: 100%;
+  padding: 6px;
+  box-sizing: border-box;
+}
+
+.link-modal .buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}

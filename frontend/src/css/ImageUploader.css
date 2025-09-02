@@ -1,0 +1,146 @@
+/* ImageUploader.css (single image version) */
+
+.uploader-container {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 ;
+}
+
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 2rem;
+  border: 2px dashed #d1d5db;
+  border-radius: 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background: #fff;
+}
+
+.dropzone.dragging {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px #bfdbfe;
+}
+
+.icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  color: #6b7280;
+}
+
+.title {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.subtitle {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.browse-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.browse-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 1rem;
+  background: #fff;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: box-shadow 0.2s, background 0.2s;
+}
+
+.browse-btn:hover {
+  background: #f9fafb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.btn-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.hint {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.hidden-input {
+  display: none;
+}
+
+.error-list {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-size: 0.875rem;
+  list-style-type: disc;
+  padding-left: 1.25rem;
+}
+
+/* Single preview mode */
+.preview-info {
+  display: flex;
+}
+
+.file-name {
+  margin-top: 15px;
+}
+
+.preview-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  border-radius: 2px;
+}
+
+.remove-btn {
+  border: none;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 9999px;
+  padding: 0.25rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.remove-btn:hover {
+  background: #f3f4f6;
+}
+
+.remove-icon {
+  width: 1rem;
+  color: #374151;
+}
+
+.demo-wrapper {
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.demo-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.demo-subtitle {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 1rem;
+}
