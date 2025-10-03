@@ -10,9 +10,10 @@ import StatCard from "../assets/StatCard";
 import NewCatInput from "../assets/NewCatInput";
 import TestTable from "../assets/TestTable";
 import { AiOutlineEdit } from "react-icons/ai";
+import { useNavigation } from "../context/NavigationContext";
 
 function AdminHomePage() {
-  const [isNavExpanded, setIsNavExpanded] = useState(false);
+  const { isNavExpanded } = useNavigation();
   const [showInput, setShowInput] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -64,21 +65,22 @@ function AdminHomePage() {
   };
 
   useEffect(() => {
-  function handleClickOutside(event) {
-    if (isEditingTitle && inputRef.current && !inputRef.current.contains(event.target)) {
-      handleSaveTitle();
+    function handleClickOutside(event) {
+      if (
+        isEditingTitle &&
+        inputRef.current &&
+        !inputRef.current.contains(event.target)
+      ) {
+        handleSaveTitle();
+      }
     }
-  }
-  document.addEventListener("mousedown", handleClickOutside);
-  return () => document.removeEventListener("mousedown", handleClickOutside);
-}, [isEditingTitle, editedTitle]);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isEditingTitle, editedTitle]);
 
   return (
     <div className={`home-page-content ${isNavExpanded ? "Nav-Expanded" : ""}`}>
-      <HomePageHeader
-        isNavExpanded={isNavExpanded}
-        setIsNavExpanded={setIsNavExpanded}
-      />
+      <HomePageHeader />
 
       {/* If category is selected, show table */}
       {selectedCategory ? (
@@ -120,7 +122,7 @@ function AdminHomePage() {
       ) : (
         <>
           {/* Overview */}
-          <div className="title">Overview</div>
+          <div className="home-title">Overview</div>
           <div className="overview-section">
             <StatCard
               title="Total Tests"

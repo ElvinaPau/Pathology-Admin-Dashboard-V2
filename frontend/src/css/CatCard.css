@@ -1,8 +1,9 @@
 .cat-card {
+  margin-left: 15px;
+  margin-bottom: 10px;
   position: relative;
   display: flex;
   flex-direction: column;
-  margin: 10px 10px;
   height: auto;
   background: white;
   padding: 15px;

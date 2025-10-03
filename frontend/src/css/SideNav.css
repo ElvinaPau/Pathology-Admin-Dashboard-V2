@@ -9,6 +9,7 @@
   padding-top: 1rem;
   border-right: 1px solid #ddd;
   overflow: visible;
+  transition: width 0.3s ease;
 }
 
 .sidenav.collapsed {
@@ -16,7 +17,7 @@
 }
 
 .sidenav.expanded {
-  width: 200px;
+  width: 205px;
 }
 
 .sidenav ul {
@@ -34,25 +35,85 @@
   position: relative;
 }
 
+.sidenav a {
+  display: flex;
+  align-items: center;
+  color: black;
+  text-decoration: none;
+  width: 100%;
+  transition: background 0.25s ease;
+}
+
+/* Default hover effect */
+.sidenav a:hover {
+  background: rgba(43, 124, 255, 0.08);
+  border-radius: 8px;
+}
+
+/* Active link like iOS tabs */
+.sidenav a.active {
+  background: rgba(43, 124, 255, 0.1);
+  border-radius: 8px;
+}
+
+.sidenav a.active .nav-icon {
+  height: 45px;
+  margin-left: 15px;
+  font-size: 20px;
+  margin-right: 16px;
+  min-width: 24px;
+  transition: all 0.25s ease;
+  color: #2b7cff;
+  transform: scale(1.2);
+}
+
+.sidenav a.active .nav-text {
+  font-weight: 600;
+  color: #2b7cff;
+}
+
+/* Optional left indicator bar */
+.sidenav a.active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: #2b7cff;
+  border-radius: 0 4px 4px 0;
+}
+
+/* Icon + text */
 .nav-icon {
   height: 45px;
   margin-left: 15px;
-  font-size: 18px;
+  font-size: 20px;
   margin-right: 16px;
   min-width: 24px;
+  transition: all 0.25s ease;
+}
+
+.logout-icon {
+  height: 35px;
+  margin-right: 16px;
+  min-width: 24px;
+  transition: all 0.25s ease;
 }
 
 .nav-text {
   font-size: 16px;
+  transition: all 0.25s ease;
 }
 
+/* Tooltip when collapsed */
 .sidenav.collapsed li:hover::after {
   content: attr(data-label);
   position: absolute;
-  left: 35%;
-  top: 90%;
+  left: 100%;
+  top: 50%;
   transform: translateY(-50%);
-  background-color: #865BB8;
+  background-color: #2b7cff;
   color: #fff;
   padding: 6px 10px;
   border-radius: 4px;
@@ -63,9 +124,28 @@
   margin-left: 10px;
 }
 
+/* Layout */
 .sidenav-inner {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   height: 93%;
+}
+
+.logout-btn {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border: none;
+  background: none;
+  color: black;
+  cursor: pointer;
+  padding: 12px 16px;
+  text-align: left;
+  transition: background 0.25s ease;
+}
+
+.logout-btn:hover {
+  background: rgba(43, 124, 255, 0.08);
+  border-radius: 8px;
 }

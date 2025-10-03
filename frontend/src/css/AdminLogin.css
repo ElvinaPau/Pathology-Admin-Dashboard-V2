@@ -138,3 +138,61 @@
 .admin-note li {
   margin-bottom: 6px;
 }
+
+label.required::after {
+  content: " *";
+  color: red;
+}
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.popup-box {
+  background: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.2);
+}
+
+.popup-box h3 {
+  margin-bottom: 15px;
+}
+
+.popup-box p {
+  margin-bottom: 20px;
+  line-height: 1.4;
+}
+
+.popup-btn {
+  display: inline-block;
+  padding: 10px 20px;
+  background: #865bb8;
+  color: white;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.popup-btn:hover {
+  background: #6a3ca3;
+}
+
+.error-text {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: 4px;
+  margin-bottom: 2px;
+}

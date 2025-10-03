@@ -1,9 +1,9 @@
 .home-page-content {
   background-color: #ffeafd;
-  margin-left: 73px;
+  margin-left: 74px;
   margin-top: 78px;
   height: calc(99vh - 78px);
-  width: calc(100% - 65px);
+  width: calc(100% - 68px);
   display: flex;
   flex-direction: column;
   overflow-y: auto;
@@ -11,10 +11,10 @@
 
 .home-page-content.Nav-Expanded {
   margin-left: 190px;
-  width: calc(100% - 182px);
+  width: calc(100% - 183px);
 }
 
-.title {
+.home-title {
   font-size: 25px;
   font-weight: bold;
   margin: 20px 0 10px 20px;

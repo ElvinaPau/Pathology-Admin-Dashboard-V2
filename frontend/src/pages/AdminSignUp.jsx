@@ -11,10 +11,47 @@ function AdminSignUp() {
     notes: "",
   });
 
-  const handleSubmit = (e) => {
+  const [showPopup, setShowPopup] = useState(false);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form Data Submitted:", formData);
-    // TODO: add API call here
+
+    try {
+      // 1. Check if email already exists
+      const checkRes = await fetch(
+        `http://localhost:5001/api/admins/check?email=${formData.email}`
+      );
+      const checkData = await checkRes.json();
+
+      if (checkData.exists) {
+        if (checkData.status === "pending") {
+          alert("⚠️ Your request with this email is already pending approval.");
+          return;
+        } else if (checkData.status === "approved") {
+          alert("✅ This email is already approved. Please log in instead.");
+          return;
+        }
+      }
+
+      // 2. Proceed with new signup request
+      const response = await fetch("http://localhost:5001/api/admins", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        // Reset form + show success popup
+        setFormData({ fullName: "", department: "", email: "", notes: "" });
+        setShowPopup(true);
+      } else {
+        const err = await response.json();
+        alert("❌ " + (err.error || "please try again"));
+      }
+    } catch (err) {
+      console.error("Error submitting form:", err);
+      alert("⚠️ Server error. Please try again later.");
+    }
   };
 
   return (
@@ -61,8 +98,8 @@ function AdminSignUp() {
             <form onSubmit={handleSubmit}>
               {/* Full Name */}
               <div className="login-form-text">
-                <label htmlFor="fullName">
-                  Full Name (include title, e.g., Dr./Mr./Ms.)
+                <label htmlFor="fullName" className="required">
+                  Full Name
                 </label>
                 <input
                   id="fullName"
@@ -79,7 +116,9 @@ function AdminSignUp() {
 
               {/* Department */}
               <div className="login-form-text">
-                <label htmlFor="department">Department</label>
+                <label htmlFor="department" className="required">
+                  Department
+                </label>
                 <div>
                   <select
                     id="department"
@@ -90,15 +129,23 @@ function AdminSignUp() {
                     required
                   >
                     <option value="">Select</option>
-                    <option value="blood">Blood</option>
-                    <option value="urine">Urine</option>
+                    <option value="Microbiology">Microbiology</option>
+                    <option value="Histopathology">Histopathology</option>
+                    <option value="Cytology">Cytology</option>
+                    <option value="Integrated">Integrated</option>
+                    <option value="Chemical Pathology">
+                      Chemical Pathology
+                    </option>
+                    <option value="Haematology">Haematology</option>
                   </select>
                 </div>
               </div>
 
               {/* Email */}
               <div className="login-form-text">
-                <label htmlFor="email">Email Address</label>
+                <label htmlFor="email" className="required">
+                  Email Address
+                </label>
                 <input
                   id="email"
                   className="input-textbox"
@@ -128,9 +175,26 @@ function AdminSignUp() {
               </div>
 
               <button type="submit" className="login-btn">
-                SIGN UP
+                SEND REQUEST
               </button>
             </form>
+            {/* --- Success Popup Modal --- */}
+            {showPopup && (
+              <div className="popup-overlay">
+                <div className="popup-box">
+                  <h3>Request Submitted!</h3>
+                  <p>
+                    Your account is pending approval by an existing admin.
+                    <br />
+                    You will receive an email notification once your account has
+                    been approved.
+                  </p>
+                  <Link to="/" className="popup-btn">
+                    Back to Login
+                  </Link>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

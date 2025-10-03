@@ -4,12 +4,14 @@ import { IoIosSearch } from "react-icons/io";
 import HtaaQLogo from "../assets/HtaaQ-logo.png";
 import SideNav from "./SideNav";
 import "../css/HomePageHeader.css";
+import { useNavigation } from "../context/NavigationContext";
 
-function HomePageHeader({ isNavExpanded, setIsNavExpanded }) {
+function HomePageHeader() {
   const navigate = useNavigate();
+  const { isNavExpanded, setIsNavExpanded } = useNavigation();
 
   const handleLogoClick = () => {
-    navigate("/admin-home");
+    navigate("/home");
   };
 
   return (
