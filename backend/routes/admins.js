@@ -76,6 +76,55 @@ router.post("/set-password/:token", async (req, res) => {
   }
 });
 
+const crypto = require("crypto");
+
+// POST /api/admins/forgot-password
+router.post("/forgot-password", async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    // 1. Check if admin exists
+    const result = await pool.query("SELECT * FROM admins WHERE email = $1", [
+      email,
+    ]);
+
+    const admin = result.rows[0];
+
+    // 2. Generate reset token
+    const rawToken = crypto.randomBytes(32).toString("hex");
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(rawToken)
+      .digest("hex");
+    const expiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+
+    await pool.query(
+      "UPDATE admins SET reset_token = $1, token_expiry = $2 WHERE id = $3",
+      [hashedToken, expiry, admin.id]
+    );
+
+    // 3. Send email with reset link
+    const link = `http://localhost:5173/set-password/${rawToken}`;
+    try {
+      await sendEmail(
+        admin.email,
+        "Password Reset Request",
+        `<p>Hello ${admin.full_name || "Admin"},</p>
+         <p>You requested a password reset.</p>
+         <p>Click below to set a new password (valid for 1 hour):</p>
+         <a href="${link}" style="color:blue;">Reset Password</a>`
+      );
+    } catch (emailErr) {
+      console.error("Failed to send reset email:", emailErr.message);
+    }
+
+    res.json({ message: "A reset password link has been sent to your email." });
+  } catch (err) {
+    console.error("Forgot password error:", err.message);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 // CHECK if email already exists
 router.get("/check", async (req, res) => {
   try {
