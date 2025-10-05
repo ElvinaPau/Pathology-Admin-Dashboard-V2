@@ -16,29 +16,35 @@ import ContainerForm from "./assets/ContainerForm";
 import AdminSetPassword from "./pages/AdminSetPassword";
 import AdminTable from "./assets/AdminTable";
 import AdminReq from "./pages/AdminReq";
+import { AuthProvider } from "./context/AuthContext";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
-      <NavigationProvider>
-        {" "}
-        {/* Wrap your routes with NavigationProvider */}
-        <Routes>
-          <Route path="/" element={<AdminLogin />} />
-          <Route path="/admin-signup" element={<AdminSignUp />} />
-          <Route path="/admin-forgot-password" element={<AdminForgotPass />} />
-          <Route path="/home" element={<AdminHomePage />} />
-          <Route path="/tab-form" element={<AddTabForm />} />
-          <Route path="/editor" element={<RichTextEditor />} />
-          <Route path="/basic-form" element={<BasicForm />} />
-          <Route path="/test-form" element={<LabTestForm />} />
-          <Route path="/image-uploader" element={<ImageUploader />} />
-          <Route path="/container-form" element={<ContainerForm />} />
-          <Route path="/set-password/:token" element={<AdminSetPassword />} />
-          <Route path="/admin-table" element={<AdminTable />} />
-          <Route path="/admin-requests" element={<AdminReq />} />
-        </Routes>
-      </NavigationProvider>
+      <AuthProvider>
+        <NavigationProvider>
+          {" "}
+          {/* Wrap your routes with NavigationProvider */}
+          <Routes>
+            <Route path="/" element={<AdminLogin />} />
+            <Route path="/admin-signup" element={<AdminSignUp />} />
+            <Route
+              path="/admin-forgot-password"
+              element={<AdminForgotPass />}
+            />
+            <Route path="/home" element={<AdminHomePage />} />
+            <Route path="/tab-form" element={<AddTabForm />} />
+            <Route path="/editor" element={<RichTextEditor />} />
+            <Route path="/basic-form" element={<BasicForm />} />
+            <Route path="/test-form" element={<LabTestForm />} />
+            <Route path="/image-uploader" element={<ImageUploader />} />
+            <Route path="/container-form" element={<ContainerForm />} />
+            <Route path="/set-password/:token" element={<AdminSetPassword />} />
+            <Route path="/admin-table" element={<AdminTable />} />
+            <Route path="/admin-requests" element={<AdminReq />} />
+          </Routes>
+        </NavigationProvider>
+      </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>
 );

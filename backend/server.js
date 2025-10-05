@@ -1,13 +1,23 @@
 const express = require("express");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 const pool = require("./db");
 require("dotenv").config();
 
 const app = express();
 const PORT = process.env.PORT || 5001;
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173", // your React app's URL
+    credentials: true, // allow cookies, auth headers, etc.
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
 app.use(express.json());
+app.use(cookieParser());
 
 pool
   .connect()

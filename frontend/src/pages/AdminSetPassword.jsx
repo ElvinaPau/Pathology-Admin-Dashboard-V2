@@ -2,12 +2,15 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import "../css/AdminLogin.css";
 import HtaaQLogo from "../assets/HtaaQ-logo.png";
+import { AiOutlineEyeInvisible } from "react-icons/ai";
+import { MdOutlineVisibility } from "react-icons/md";
 import axios from "axios";
 
 axios.defaults.baseURL = "http://localhost:5001";
 
 function AdminSetPassword() {
   const { token } = useParams();
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -124,14 +127,27 @@ function AdminSetPassword() {
           <form onSubmit={handleSubmit}>
             <div className="login-form-text">
               <label>Password</label>
-              <input
-                className="input-textbox"
-                type="password"
-                name="password"
-                placeholder="Enter 8 characters or more"
-                value={formData.password}
-                onChange={handleChange}
-              />
+              <div className="password-container">
+                <input
+                  className="input-textbox"
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  placeholder="Enter 8 characters or more"
+                  value={formData.password}
+                  onChange={handleChange}
+                />
+                <span
+                  className="toggle-password"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                >
+                  {showPassword ? (
+                    <MdOutlineVisibility className="eye-icon" />
+                  ) : (
+                    <AiOutlineEyeInvisible className="eye-icon" />
+                  )}
+                </span>
+              </div>
+
               {errors.password && (
                 <p className="error-text">{errors.password}</p>
               )}
@@ -139,24 +155,33 @@ function AdminSetPassword() {
 
             <div className="login-form-text">
               <label>Re-enter Password</label>
-              <input
-                className="input-textbox"
-                type="password"
-                name="reenter_password"
-                placeholder="Re-enter password"
-                value={formData.reenter_password}
-                onChange={handleChange}
-              />
+              <div className="password-container">
+                <input
+                  className="input-textbox"
+                  type={showPassword ? "text" : "password"}
+                  name="reenter_password"
+                  placeholder="Re-enter password"
+                  value={formData.reenter_password}
+                  onChange={handleChange}
+                />
+                <span
+                  className="toggle-password"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                >
+                  {showPassword ? (
+                    <MdOutlineVisibility className="eye-icon" />
+                  ) : (
+                    <AiOutlineEyeInvisible className="eye-icon" />
+                  )}
+                </span>
+              </div>
+
               {errors.reenter_password && (
                 <p className="error-text">{errors.reenter_password}</p>
               )}
             </div>
 
-            <button
-              className="login-btn"
-              type="submit"
-              disabled={!isFormValid}
-            >
+            <button className="login-btn" type="submit" disabled={!isFormValid}>
               SUBMIT
             </button>
           </form>

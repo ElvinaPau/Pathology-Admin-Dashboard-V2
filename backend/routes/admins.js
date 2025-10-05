@@ -4,31 +4,36 @@ const pool = require("../db");
 const { sendEmail } = require("../utils/mailer");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
+const authenticate = require("../middleware/authenticate");
 
-// GET all admins
+// Ensure JWT secret exists
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) throw new Error("JWT_SECRET not configured");
+
+// ========================
+// GET all admins (admin-only usage, optional protect later)
+// ========================
 router.get("/", async (req, res) => {
   try {
-    const result = await pool.query(`SELECT 
-        id,
-        full_name,
-        department,
-        email,
-        notes,
-        to_char(time, 'YYYY-MM-DD HH24:MI:SS') AS time,
-        status
-      FROM admins
-      ORDER BY id ASC`);
+    const result = await pool.query(
+      `SELECT id, full_name, department, email, notes,
+              to_char(time, 'YYYY-MM-DD HH24:MI:SS') AS time, status
+       FROM admins
+       ORDER BY id ASC`
+    );
     res.json(result.rows);
   } catch (err) {
-    console.error(err.message);
+    console.error("Error fetching admins:", err.message);
     res.status(500).json({ error: "Server error" });
   }
 });
 
+// ========================
+// Verify reset token
+// ========================
 router.get("/verify-token/:token", async (req, res) => {
   const { token } = req.params;
-  const crypto = require("crypto");
-
   const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
   try {
@@ -43,22 +48,24 @@ router.get("/verify-token/:token", async (req, res) => {
 
     res.json({ success: true, adminId: result.rows[0].id });
   } catch (err) {
-    console.error(err.message);
+    console.error("Error verifying token:", err.message);
     res.status(500).json({ error: "Server error" });
   }
 });
 
+// ========================
+// Set new password
+// ========================
 router.post("/set-password/:token", async (req, res) => {
   const { token } = req.params;
   const { password } = req.body;
-  const crypto = require("crypto");
 
   const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
   const hashedPassword = await bcrypt.hash(password, 10);
 
   try {
     const result = await pool.query(
-      `UPDATE admins 
+      `UPDATE admins
        SET password = $1, reset_token = NULL, token_expiry = NULL
        WHERE reset_token = $2 AND token_expiry > NOW()
        RETURNING id`,
@@ -71,26 +78,29 @@ router.post("/set-password/:token", async (req, res) => {
 
     res.json({ success: true, message: "Password set successfully" });
   } catch (err) {
-    console.error(err.message);
+    console.error("Error setting password:", err.message);
     res.status(500).json({ error: "Server error" });
   }
 });
 
-const crypto = require("crypto");
-
-// POST /api/admins/forgot-password
+// ========================
+// Forgot password
+// ========================
 router.post("/forgot-password", async (req, res) => {
   const { email } = req.body;
 
   try {
-    // 1. Check if admin exists
     const result = await pool.query("SELECT * FROM admins WHERE email = $1", [
       email,
     ]);
 
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Admin not found" });
+    }
+
     const admin = result.rows[0];
 
-    // 2. Generate reset token
+    // Generate reset token
     const rawToken = crypto.randomBytes(32).toString("hex");
     const hashedToken = crypto
       .createHash("sha256")
@@ -103,8 +113,8 @@ router.post("/forgot-password", async (req, res) => {
       [hashedToken, expiry, admin.id]
     );
 
-    // 3. Send email with reset link
     const link = `http://localhost:5173/set-password/${rawToken}`;
+
     try {
       await sendEmail(
         admin.email,
@@ -125,7 +135,9 @@ router.post("/forgot-password", async (req, res) => {
   }
 });
 
-// CHECK if email already exists
+// ========================
+// Check if email exists
+// ========================
 router.get("/check", async (req, res) => {
   try {
     const { email } = req.query;
@@ -140,10 +152,7 @@ router.get("/check", async (req, res) => {
     );
 
     if (result.rows.length > 0) {
-      return res.json({
-        exists: true,
-        status: result.rows[0].status, // "pending" | "approved" | etc.
-      });
+      return res.json({ exists: true, status: result.rows[0].status });
     }
 
     res.json({ exists: false });
@@ -153,15 +162,15 @@ router.get("/check", async (req, res) => {
   }
 });
 
-// POST /api/admin/login
+// ========================
+// Login (with refresh token)
+// ========================
+
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // 1. Check if user exists
-    const result = await pool.query("SELECT * FROM admins WHERE email = $1", [
-      email,
-    ]);
+    const result = await pool.query("SELECT * FROM admins WHERE email = $1", [email]);
 
     if (result.rows.length === 0) {
       return res.status(404).json({ error: "User not found" });
@@ -169,30 +178,43 @@ router.post("/login", async (req, res) => {
 
     const admin = result.rows[0];
 
-    // 2. Check status
-    if (admin.status == "pending") {
+    if (admin.status === "pending") {
       return res.status(403).json({ error: "Account not approved yet" });
     }
-
-    if (admin.status == "rejected") {
+    if (admin.status === "rejected") {
       return res.status(403).json({ error: "Account request is rejected" });
     }
 
-    // 3. Compare password
     const validPassword = await bcrypt.compare(password, admin.password);
     if (!validPassword) {
       return res.status(401).json({ error: "Wrong password" });
     }
 
-    // 4. Generate token
-    const token = jwt.sign(
+    // Generate short-lived access token (1h)
+    const accessToken = jwt.sign(
       { id: admin.id, email: admin.email },
-      process.env.JWT_SECRET || "supersecret",
+      process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: "1h" }
     );
 
+    // Generate refresh token (1 day)
+    const refreshToken = jwt.sign(
+      { id: admin.id, email: admin.email },
+      process.env.REFRESH_TOKEN_SECRET,
+      { expiresIn: "1d" }
+    );
+
+    // Send refresh token as secure HTTP-only cookie
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: false, // ❗ set to true in production (HTTPS)
+      sameSite: "Strict",
+      maxAge: 10 * 60 * 60 * 1000, // 10h
+    });
+
+    // Send access token + admin info
     res.json({
-      token,
+      token: accessToken,
       admin: {
         id: admin.id,
         email: admin.email,
@@ -202,15 +224,105 @@ router.post("/login", async (req, res) => {
       },
     });
   } catch (err) {
-    console.error(err.message);
+    console.error("Login error:", err.message);
     res.status(500).json({ error: "Server error" });
   }
 });
 
-// POST new admin (sign up form)
+router.post("/refresh", (req, res) => {
+  const refreshToken = req.cookies.refreshToken;
+  if (!refreshToken) return res.status(401).json({ error: "No refresh token" });
+
+  jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, decoded) => {
+    if (err) return res.status(403).json({ error: "Invalid or expired refresh token" });
+
+    const newAccessToken = jwt.sign(
+      { id: decoded.id, email: decoded.email },
+      process.env.ACCESS_TOKEN_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    res.json({ token: newAccessToken });
+  });
+});
+
+router.post("/logout", (req, res) => {
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    secure: false, // true in production
+    sameSite: "Strict",
+  });
+  res.json({ message: "Logged out successfully" });
+});
+
+// ========================
+// Get logged-in admin profile
+// ========================
+router.get("/me", authenticate, async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT id, full_name, department, email, status
+       FROM admins WHERE id = $1`,
+      [req.user.id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Admin not found" });
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error("Error fetching admin:", err.message);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// ========================
+// Update profile (only self)
+// ========================
+router.put("/:id", authenticate, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { full_name, department } = req.body;
+
+    // Restrict: user can only update own profile
+    if (req.user.id !== parseInt(id)) {
+      return res.status(403).json({ error: "Unauthorized" });
+    }
+
+    const result = await pool.query(
+      `UPDATE admins
+       SET full_name = $1, department = $2
+       WHERE id = $3
+       RETURNING id, full_name, department, email`,
+      [full_name, department, id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Admin not found" });
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error("Error updating admin:", err.message);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// ========================
+// Sign up (new admin request)
+// ========================
 router.post("/", async (req, res) => {
   const { fullName, department, email, notes } = req.body;
   try {
+    const exists = await pool.query(
+      "SELECT id FROM admins WHERE LOWER(email) = LOWER($1)",
+      [email]
+    );
+    if (exists.rows.length > 0) {
+      return res.status(400).json({ error: "Email already registered" });
+    }
+
     const result = await pool.query(
       `INSERT INTO admins (full_name, department, email, notes, status)
        VALUES ($1, $2, $3, $4, 'pending')
@@ -219,20 +331,19 @@ router.post("/", async (req, res) => {
     );
     res.json(result.rows[0]);
   } catch (err) {
-    console.error(err.message);
+    console.error("Error creating admin:", err.message);
     res.status(500).json({ error: "Server error" });
   }
 });
 
-// UPDATE status
-// PUT /api/admins/:id/status
+// ========================
+// Update status (approve/reject) + send email
+// ========================
 router.put("/:id/status", async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
-  const crypto = require("crypto");
 
   try {
-    // Update DB first
     const result = await pool.query(
       "UPDATE admins SET status = $1 WHERE id = $2 RETURNING *",
       [status, id]
@@ -244,7 +355,6 @@ router.put("/:id/status", async (req, res) => {
 
     const admin = result.rows[0];
 
-    // Send email depending on status
     if (status === "approved") {
       const rawToken = crypto.randomBytes(32).toString("hex");
       const hashedToken = crypto
@@ -265,12 +375,12 @@ router.put("/:id/status", async (req, res) => {
           admin.email,
           "Admin Request Approved",
           `<p>Hello ${admin.full_name},</p>
-          <p>Your admin request has been <b>APPROVED</b>.
+           <p>Your admin request has been <b>APPROVED</b>.</p>
            <p>Click the link below to set your password (valid 24h):</p>
            <a href="${link}" style="color:blue;">Set Password</a>`
         );
       } catch (emailErr) {
-        console.error("Failed to send email:", emailErr.message);
+        console.error("Failed to send approval email:", emailErr.message);
       }
     } else if (status === "rejected") {
       try {
@@ -287,7 +397,20 @@ router.put("/:id/status", async (req, res) => {
 
     res.json(admin);
   } catch (err) {
-    console.error(err.message);
+    console.error("Error updating status:", err.message);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// ========================
+// Get total number of admins
+// ========================
+router.get("/count", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT COUNT(*) AS total FROM admins");
+    res.json({ total: parseInt(result.rows[0].total, 10) });
+  } catch (err) {
+    console.error("Error fetching admin count:", err.message);
     res.status(500).json({ error: "Server error" });
   }
 });

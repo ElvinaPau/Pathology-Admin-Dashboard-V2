@@ -6,10 +6,26 @@ import {
 } from "react-icons/ai";
 import { PiUsersThree, PiUsersThreeFill } from "react-icons/pi";
 import { FaSignOutAlt } from "react-icons/fa";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import "../css/SideNav.css";
 
 function SideNav({ isExpanded }) {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    const confirmLogout = window.confirm("Are you sure you want to log out?");
+    if (confirmLogout) {
+      //Remove token from storage
+      localStorage.removeItem("token");
+      sessionStorage.removeItem("token");
+      localStorage.removeItem("user");
+      sessionStorage.removeItem("user");
+
+      //Redirect to login
+      navigate("/");
+    }
+  };
+
   return (
     <div className={`sidenav ${isExpanded ? "expanded" : "collapsed"}`}>
       <div className="sidenav-inner">
@@ -46,7 +62,9 @@ function SideNav({ isExpanded }) {
                   ) : (
                     <PiUsersThree className="nav-icon" />
                   )}
-                  {isExpanded && <span className="nav-text">Admin Requests</span>}
+                  {isExpanded && (
+                    <span className="nav-text">Admin Requests</span>
+                  )}
                 </>
               )}
             </NavLink>
@@ -75,7 +93,7 @@ function SideNav({ isExpanded }) {
         {/* Logout */}
         <ul>
           <li data-label="Logout">
-            <button className="logout-btn">
+            <button className="logout-btn" onClick={handleLogout}>
               <FaSignOutAlt className="logout-icon" />
               {isExpanded && <span className="nav-text">Logout</span>}
             </button>

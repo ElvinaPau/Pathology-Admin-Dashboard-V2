@@ -1,14 +1,15 @@
 import { useNavigate } from "react-router-dom";
 import { IoIosMenu } from "react-icons/io";
-import { IoIosSearch } from "react-icons/io";
 import HtaaQLogo from "../assets/HtaaQ-logo.png";
 import SideNav from "./SideNav";
 import "../css/HomePageHeader.css";
 import { useNavigation } from "../context/NavigationContext";
+import { useAuth } from "../context/AuthContext";
 
 function HomePageHeader() {
   const navigate = useNavigate();
   const { isNavExpanded, setIsNavExpanded } = useNavigation();
+  const { admin } = useAuth(); // Admin from AuthContext
 
   const handleLogoClick = () => {
     navigate("/home");
@@ -29,16 +30,14 @@ function HomePageHeader() {
             alt="Logo"
           />
         </div>
-        {/* <div className="search-container">
-          <div className="search-wrapper">
-            <IoIosSearch className="search-icon" />
-            <input className="search-bar" type="text" placeholder="Search" />
-          </div>
-        </div> */}
-        <h3 className="username">User 1</h3>
+
+        <h3 className="username">
+          {admin ? admin.full_name : "Loading..."}
+        </h3>
       </div>
       <SideNav isExpanded={isNavExpanded} />
     </>
   );
 }
+
 export default HomePageHeader;

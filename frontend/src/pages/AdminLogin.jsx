@@ -3,6 +3,9 @@ import "../css/AdminLogin.css";
 import { Link, useNavigate } from "react-router-dom";
 import HtaaQLogo from "../assets/HtaaQ-logo.png";
 import axios from "axios";
+import { AiOutlineEyeInvisible } from "react-icons/ai";
+import { MdOutlineVisibility } from "react-icons/md";
+import { useAuth } from "../context/AuthContext";
 
 function AdminLogin() {
   const [formData, setFormData] = useState({
@@ -12,7 +15,11 @@ function AdminLogin() {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const { login } = useAuth();
   const navigate = useNavigate();
+
+  axios.defaults.withCredentials = true;
 
   // handle input change
   const handleChange = (e) => {
@@ -32,11 +39,11 @@ function AdminLogin() {
     try {
       const res = await axios.post(
         "http://localhost:5001/api/admins/login",
-        formData
+        formData,
+        { withCredentials: true }
       );
 
-      // assuming backend returns { token, admin }
-      localStorage.setItem("token", res.data.token);
+      login(res.data.token);
 
       // redirect to dashboard
       navigate("/home");
@@ -90,16 +97,28 @@ function AdminLogin() {
               <label htmlFor="password" className="required">
                 Password
               </label>
-              <input
-                id="password"
-                name="password"
-                className="input-textbox"
-                type="password"
-                placeholder="Enter 8 characters or more"
-                value={formData.password}
-                onChange={handleChange}
-                required
-              />
+              <div className="password-container">
+                <input
+                  id="password"
+                  name="password"
+                  className="input-textbox"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter 8 characters or more"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                />
+                <span
+                  className="toggle-password"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                >
+                  {showPassword ? (
+                    <MdOutlineVisibility className="eye-icon" />
+                  ) : (
+                    <AiOutlineEyeInvisible className="eye-icon" />
+                  )}
+                </span>
+              </div>
             </div>
             {error && <p className="error-text">{error}</p>}
 

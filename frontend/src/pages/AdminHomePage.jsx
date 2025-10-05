@@ -11,15 +11,19 @@ import NewCatInput from "../assets/NewCatInput";
 import TestTable from "../assets/TestTable";
 import { AiOutlineEdit } from "react-icons/ai";
 import { useNavigation } from "../context/NavigationContext";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function AdminHomePage() {
   const { isNavExpanded } = useNavigation();
+  const navigate = useNavigate();
   const [showInput, setShowInput] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [editedTitle, setEditedTitle] = useState("");
   const inputRef = useRef(null);
+  const [adminCount, setAdminCount] = useState(0);
 
   const [categories, setCategories] = useState([
     "Tests (Inhouse)",
@@ -78,6 +82,19 @@ function AdminHomePage() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isEditingTitle, editedTitle]);
 
+  useEffect(() => {
+    const fetchCount = async () => {
+      try {
+        const res = await axios.get("http://localhost:5001/api/admins/count");
+        setAdminCount(res.data.total);
+      } catch (err) {
+        console.error("Error fetching admin count:", err.message);
+      }
+    };
+
+    fetchCount();
+  }, []);
+
   return (
     <div className={`home-page-content ${isNavExpanded ? "Nav-Expanded" : ""}`}>
       <HomePageHeader />
@@ -132,15 +149,12 @@ function AdminHomePage() {
             />
             <StatCard
               title="Total Admin"
-              count={5}
+              count={adminCount}
               icon={<FaUsers />}
-              lastUpdated="1 Jan 2025"
+              lastUpdated={new Date().toLocaleDateString()}
+              onClick={() => navigate("/admin-requests")}
             />
-            <ProfileCard
-              name="Dr. Abc"
-              department="Chemical Dept"
-              email="abc@example.com"
-            />
+            <ProfileCard />
           </div>
 
           {/* Categories */}
