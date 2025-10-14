@@ -44,6 +44,10 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             <Route path="/admin-requests" element={<AdminReq />} />
             <Route path="/categories/:id" element={<CategoryDetails />} />
             <Route path="/categories/:id/add" element={<AddTabForm />} />
+            <Route
+              path="/categories/:id/edit/:testId"
+              element={<AddTabForm />}
+            />
           </Routes>
         </NavigationProvider>
       </AuthProvider>

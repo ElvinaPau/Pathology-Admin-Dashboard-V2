@@ -26,9 +26,13 @@ export function AuthProvider({ children }) {
   // ========================
   // Fetch current admin info
   // ========================
-  const fetchCurrentAdmin = async () => {
+  const fetchCurrentAdmin = async (jwtToken) => {
     try {
-      const res = await axios.get("http://localhost:5001/api/admins/me");
+      const res = await axios.get("http://localhost:5001/api/admins/me", {
+        headers: {
+          Authorization: `Bearer ${jwtToken || token}`,
+        },
+      });
       setAdmin(res.data);
     } catch (err) {
       console.error("Error fetching admin:", err);
@@ -64,7 +68,7 @@ export function AuthProvider({ children }) {
   const login = (jwtToken) => {
     localStorage.setItem("token", jwtToken);
     setToken(jwtToken);
-    fetchCurrentAdmin();
+    fetchCurrentAdmin(jwtToken);
   };
 
   // ========================

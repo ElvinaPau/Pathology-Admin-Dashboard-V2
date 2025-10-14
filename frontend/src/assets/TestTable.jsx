@@ -1,36 +1,83 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import "../css/TestTable.css";
 import { AiOutlineEdit } from "react-icons/ai";
 import { MdDeleteOutline } from "react-icons/md";
 import { useNavigate, useParams } from "react-router-dom";
 
 const TestTable = () => {
-  const { id } = useParams(); // this is category ID
+  const { id } = useParams(); // Category ID
   const navigate = useNavigate();
   const [tests, setTests] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("all");
 
+  const isRecent = (updatedAt) => {
+    if (!updatedAt) return false;
+    const updatedDate = new Date(updatedAt);
+    const now = new Date();
+    const diffInDays = (now - updatedDate) / (1000 * 60 * 60 * 24);
+    return diffInDays <= 7;
+  };
+
+  // Fetch tests from backend
+  useEffect(() => {
+    const fetchTests = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:5001/api/tests?category_id=${id}`
+        );
+        setTests(res.data);
+      } catch (err) {
+        console.error("Error fetching tests:", err);
+      }
+    };
+
+    fetchTests();
+  }, [id]);
+
   // Count tests per status
+
   const getCount = (status) => {
-    if (status === "all") return tests.length;
-    return tests.filter((t) => t.status === status).length;
+    if (status === "all")
+      return tests.filter((t) => t.status !== "deleted").length;
+    if (status === "recent")
+      return tests.filter(
+        (t) => t.status !== "deleted" && isRecent(t.updatedAt)
+      ).length;
+    if (status === "deleted")
+      return tests.filter((t) => t.status === "deleted").length;
+    return 0;
   };
 
   const filteredTests = tests.filter((test) => {
-    const matchesTab = activeTab === "all" ? true : test.status === activeTab;
+    const matchesTab =
+      activeTab === "all"
+        ? test.status !== "deleted" // exclude deleted
+        : activeTab === "recent"
+        ? test.status !== "deleted" && isRecent(test.updatedAt) // recent and not deleted
+        : test.status === "deleted"; // deleted tab
+
     const matchesSearch = test.name
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
+
     return matchesTab && matchesSearch;
   });
 
-  const handleDelete = (id) => {
-    setTests((prev) => prev.filter((t) => t.id !== id));
+  const handleDelete = async (id) => {
+    try {
+      // Call backend to delete
+      await axios.delete(`http://localhost:5001/api/tests/${id}`);
+      // Update local state
+      setTests((prev) => prev.filter((t) => t.id !== id));
+    } catch (err) {
+      console.error("Error deleting test:", err);
+    }
   };
 
-  const handleEdit = (id) => {
-    alert(`Edit test with ID: ${id}`);
+  const handleEdit = (testId) => {
+    navigate(`/categories/${id}/edit/${testId}`);
   };
 
   return (
@@ -38,13 +85,14 @@ const TestTable = () => {
       {/* Tabs */}
       <div className="tabs-row">
         <div className="tabs">
-          {["all", "recent", "deleted"].map((tab) => (
+          {["all", "recent", "deleted"].map((status) => (
             <button
-              key={tab}
-              className={activeTab === tab ? "active" : ""}
-              onClick={() => setActiveTab(tab)}
+              key={status}
+              className={activeTab === status ? "active" : ""}
+              onClick={() => setActiveTab(status)}
             >
-              {tab.charAt(0).toUpperCase() + tab.slice(1)} ({getCount(tab)})
+              {status.charAt(0).toUpperCase() + status.slice(1)} (
+              {getCount(status)})
             </button>
           ))}
         </div>

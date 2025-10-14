@@ -8,6 +8,7 @@ import HomePageHeader from "../assets/HomePageHeader";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { useParams, useNavigate } from "react-router-dom";
 import { useNavigation } from "../context/NavigationContext";
+import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 
 const uid = () =>
@@ -35,7 +36,8 @@ function getFormComponent(type) {
 }
 
 function AddTabForm() {
-  const { id } = useParams();
+  const { currentUser } = useAuth();
+  const { id, testId } = useParams();
   const navigate = useNavigate();
   const { isNavExpanded } = useNavigation();
 
@@ -43,10 +45,9 @@ function AddTabForm() {
     name: "",
     category: "",
     infoType: "",
-    basics: [{ id: uid(), type: "", fields: [] }],
+    infos: [{ id: uid(), type: "", fields: [] }],
   });
 
-  // Ref for the most recently added form
   const lastFormRef = useRef(null);
 
   // Fetch category name
@@ -64,29 +65,65 @@ function AddTabForm() {
     fetchCategory();
   }, [id]);
 
-  // Add new Basic form (with scroll + highlight)
+  // Fetch test data if editing
+  useEffect(() => {
+    if (!testId) return;
+
+    const fetchTest = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:5001/api/tests/${testId}?includeinfos=true`
+        );
+        const test = res.data;
+
+        if (!test) {
+          alert("Test not found");
+          return;
+        }
+
+        setFormData((prev) => ({
+          ...prev,
+          name: test.name,
+          category: test.categoryName,
+          infoType: test.infoTypes?.[0] || "",
+          infos: (test.infos || []).map((info) => ({
+            id: uid(),
+            type: info.type || "",
+            fields: {
+              title: info.title || "",
+              description: info.description || "",
+              image: info.imageUrl || null,
+              ...info.extraData,
+            },
+          })),
+        }));
+      } catch (err) {
+        console.error("Error fetching test data:", err);
+        alert("Failed to load test for editing");
+      }
+    };
+
+    fetchTest();
+  }, [testId]);
+
   const addBasicForm = () => {
     if (!formData.infoType) {
       alert("Please select an Info Type first.");
       return;
     }
 
-    const newForm = { id: uid(), type: "Basic", fields: [] };
+    const newForm = { id: uid(), type: "Basic", fields: {} };
 
     setFormData((prev) => ({
       ...prev,
-      basics: [...prev.basics, newForm],
+      infos: [...prev.infos, newForm],
     }));
 
-    // Wait for new form to render
     setTimeout(() => {
-      // Scroll into view
       lastFormRef.current?.scrollIntoView({
         behavior: "smooth",
         block: "start",
       });
-
-      // Add highlight animation
       if (lastFormRef.current) {
         lastFormRef.current.classList.add("newly-added");
         setTimeout(
@@ -97,29 +134,67 @@ function AddTabForm() {
     }, 100);
   };
 
-  // Handle drag reorder
   const handleDragEnd = (result) => {
     if (!result.destination) return;
     if (result.destination.index === result.source.index) return;
-
-    // Prevent first block from being dragged or swapped
     if (result.source.index === 0 || result.destination.index === 0) return;
 
     setFormData((prev) => {
       const reordered = reorder(
-        prev.basics,
+        prev.infos,
         result.source.index,
         result.destination.index
       );
-      return { ...prev, basics: reordered };
+      return { ...prev, infos: reordered };
     });
+  };
+
+  const handleSaveAll = async () => {
+    try {
+      if (!formData.name.trim()) {
+        alert("Please enter a Test / Tab name.");
+        return;
+      }
+      if (!formData.infoType) {
+        alert("Please select an Info Type.");
+        return;
+      }
+
+      const payload = {
+        name: formData.name,
+        category_id: id,
+        updated_by: currentUser?.username || "Admin",
+        status: "recent",
+        infos: formData.infos.map((group) => ({
+          type: group.type || formData.infoType,
+          title: group.fields?.title || "",
+          description: group.fields?.description || "",
+          image_url: group.fields?.image || null,
+          extra_data: group.fields || null,
+        })),
+      };
+
+      if (testId) {
+        // Update existing
+        await axios.put(`http://localhost:5001/api/tests/${testId}`, payload);
+        alert("Test updated successfully!");
+      } else {
+        // Create new
+        await axios.post("http://localhost:5001/api/tests", payload);
+        alert("Test created successfully!");
+      }
+
+      navigate(`/categories/${id}`);
+    } catch (err) {
+      console.error("Error saving test:", err);
+      alert("Failed to save test. Check console for details.");
+    }
   };
 
   return (
     <div className={`home-page-content ${isNavExpanded ? "Nav-Expanded" : ""}`}>
       <div className="form-page-wrapper">
         <HomePageHeader />
-
         <button
           className="back-btn"
           onClick={() => navigate(`/categories/${id}`)}
@@ -129,7 +204,7 @@ function AddTabForm() {
 
         <div className="table-title">
           <div className="title-display">
-            <div>Add New Test / Tab</div>
+            <div>{testId ? "Edit Test / Tab" : "Add New Test / Tab"}</div>
           </div>
         </div>
 
@@ -149,7 +224,6 @@ function AddTabForm() {
           </div>
 
           <div className="side-by-side">
-            {/* Category */}
             <div className="add-form-group">
               <label>Category</label>
               <input
@@ -160,23 +234,19 @@ function AddTabForm() {
               />
             </div>
 
-            {/* Info Type */}
             <div className="add-form-group">
               <label className="required">Info Type</label>
               <select
                 value={formData.infoType}
                 onChange={(e) => {
                   const newType = e.target.value;
-                  setFormData((prev) => {
-                    const updatedBasics = prev.basics.map((g, idx) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    infoType: newType,
+                    infos: prev.infos.map((g, idx) =>
                       idx === 0 ? { ...g, type: newType } : g
-                    );
-                    return {
-                      ...prev,
-                      infoType: newType,
-                      basics: updatedBasics,
-                    };
-                  });
+                    ),
+                  }));
                 }}
                 required
               >
@@ -189,22 +259,20 @@ function AddTabForm() {
           </div>
         </div>
 
-        {/* Dynamic Forms Section */}
         {(formData.infoType === "Basic" ||
           formData.infoType === "Lab Test" ||
           formData.infoType === "Container") && (
           <div className="basic-form-section">
             <DragDropContext onDragEnd={handleDragEnd}>
-              <Droppable droppableId="basics">
+              <Droppable droppableId="infos">
                 {(provided) => (
                   <div {...provided.droppableProps} ref={provided.innerRef}>
-                    {formData.basics.map((group, index) => {
+                    {formData.infos.map((group, index) => {
                       const FormComponent =
                         index === 0
                           ? getFormComponent(group.type)
                           : getFormComponent("Basic");
 
-                      // First block (Info Type) is NOT draggable
                       if (index === 0) {
                         return (
                           <div
@@ -212,13 +280,13 @@ function AddTabForm() {
                             className="draggable-form fixed-first"
                           >
                             <FormComponent
-                              basics={group.fields}
-                              setBasics={(updated) => {
+                              infos={group.fields}
+                              setInfos={(updated) => {
                                 setFormData((prev) => {
-                                  const newBasics = prev.basics.map((b, i) =>
+                                  const newinfos = prev.infos.map((b, i) =>
                                     i === index ? { ...b, fields: updated } : b
                                   );
-                                  return { ...prev, basics: newBasics };
+                                  return { ...prev, infos: newinfos };
                                 });
                               }}
                               isFirst
@@ -227,7 +295,6 @@ function AddTabForm() {
                         );
                       }
 
-                      // All other blocks are draggable
                       return (
                         <Draggable
                           key={group.id}
@@ -237,7 +304,7 @@ function AddTabForm() {
                           {(provided) => (
                             <div
                               ref={
-                                index === formData.basics.length - 1
+                                index === formData.infos.length - 1
                                   ? (el) => {
                                       lastFormRef.current = el;
                                       provided.innerRef(el);
@@ -249,21 +316,21 @@ function AddTabForm() {
                               className="draggable-form"
                             >
                               <FormComponent
-                                basics={group.fields}
-                                setBasics={(updated) => {
+                                infos={group.fields}
+                                setInfos={(updated) => {
                                   setFormData((prev) => {
-                                    const newBasics = prev.basics.map((b, i) =>
+                                    const newinfos = prev.infos.map((b, i) =>
                                       i === index
                                         ? { ...b, fields: updated }
                                         : b
                                     );
-                                    return { ...prev, basics: newBasics };
+                                    return { ...prev, infos: newinfos };
                                   });
                                 }}
                                 onRemove={() => {
                                   setFormData((prev) => ({
                                     ...prev,
-                                    basics: prev.basics.filter(
+                                    infos: prev.infos.filter(
                                       (_, i) => i !== index
                                     ),
                                   }));
@@ -274,7 +341,6 @@ function AddTabForm() {
                         </Draggable>
                       );
                     })}
-
                     {provided.placeholder}
                   </div>
                 )}
@@ -291,6 +357,7 @@ function AddTabForm() {
             <button
               type="button"
               className="save-all-btn"
+              onClick={handleSaveAll}
             >
               💾 Save All
             </button>

@@ -3,20 +3,32 @@ import "../css/BasicForm.css";
 import RichTextEditor from "./RichTextEditor";
 import { IoIosRemoveCircleOutline, IoIosRemoveCircle } from "react-icons/io";
 
-function BasicForm({ onRemove, isFirst }) {
+function BasicForm({ index, infos = [], setInfos, onRemove, isFirst }) {
   const [formData, setFormData] = useState({
-    title: "",
-    description: "",
+    title: infos[index]?.fields?.title || "",
+    description: infos[index]?.fields?.description || "",
   });
 
   const [isHover, setIsHover] = useState(false);
+
+  const handleChange = (key, value) => {
+    const updated = { ...formData, [key]: value };
+    setFormData(updated);
+
+    // Update only this index in the parent infos array
+    setInfos((prev) => {
+      const copy = [...prev];
+      copy[index] = { ...copy[index], fields: updated }; // keep consistent structure
+      return copy;
+    });
+  };
 
   return (
     <div className="add-form-container">
       <div className="form-header">
         <h2>Basic</h2>
 
-        {/* ❌ Remove button (disabled for the first form) */}
+        {/* Remove button (disabled for the first form) */}
         {!isFirst && (
           <button
             onClick={onRemove}
@@ -37,13 +49,16 @@ function BasicForm({ onRemove, isFirst }) {
         <input
           type="text"
           value={formData.title}
-          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+          onChange={(e) => handleChange("title", e.target.value)}
         />
       </div>
 
       <div>
         <label>Description</label>
-        <RichTextEditor />
+        <RichTextEditor
+          value={formData.description}
+          onChange={(val) => handleChange("description", val)}
+        />
       </div>
     </div>
   );

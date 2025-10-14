@@ -170,7 +170,9 @@ router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const result = await pool.query("SELECT * FROM admins WHERE email = $1", [email]);
+    const result = await pool.query("SELECT * FROM admins WHERE email = $1", [
+      email,
+    ]);
 
     if (result.rows.length === 0) {
       return res.status(404).json({ error: "User not found" });
@@ -192,14 +194,14 @@ router.post("/login", async (req, res) => {
 
     // Generate short-lived access token (1h)
     const accessToken = jwt.sign(
-      { id: admin.id, email: admin.email },
+      { id: admin.id, email: admin.email, full_name: admin.full_name },
       process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: "1h" }
     );
 
     // Generate refresh token (1 day)
     const refreshToken = jwt.sign(
-      { id: admin.id, email: admin.email },
+      { id: admin.id, email: admin.email, full_name: admin.full_name },
       process.env.REFRESH_TOKEN_SECRET,
       { expiresIn: "1d" }
     );
@@ -234,7 +236,10 @@ router.post("/refresh", (req, res) => {
   if (!refreshToken) return res.status(401).json({ error: "No refresh token" });
 
   jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, decoded) => {
-    if (err) return res.status(403).json({ error: "Invalid or expired refresh token" });
+    if (err)
+      return res
+        .status(403)
+        .json({ error: "Invalid or expired refresh token" });
 
     const newAccessToken = jwt.sign(
       { id: decoded.id, email: decoded.email },

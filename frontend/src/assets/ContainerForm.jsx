@@ -4,20 +4,31 @@ import RichTextEditor from "./RichTextEditor";
 import { IoIosRemoveCircleOutline, IoIosRemoveCircle } from "react-icons/io";
 import { ImageUploader } from "./ImageUploader";
 
-function Container({ onRemove, isFirst }) {
+function ContainerForm({ index, infos = [], setInfos, onRemove, isFirst }) {
   const [formData, setFormData] = useState({
-    title: "",
-    description: "",
+    title: infos[index]?.fields?.title || "",
+    description: infos[index]?.fields?.description || "",
+    image: infos[index]?.fields?.image || null,
   });
 
   const [isHover, setIsHover] = useState(false);
+
+  const handleChange = (key, value) => {
+    const updated = { ...formData, [key]: value };
+    setFormData(updated);
+
+    setInfos((prev) => {
+      const copy = [...prev];
+      copy[index] = { ...copy[index], fields: updated };
+      return copy;
+    });
+  };
 
   return (
     <div className="add-form-container">
       <div className="form-header">
         <h2>Container</h2>
 
-        {/* ❌ Remove button (disabled for the first form) */}
         {!isFirst && (
           <button
             onClick={onRemove}
@@ -38,20 +49,27 @@ function Container({ onRemove, isFirst }) {
         <input
           type="text"
           value={formData.title}
-          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+          onChange={(e) => handleChange("title", e.target.value)}
         />
       </div>
+
       <div className="add-form-group">
         <label>Image</label>
-        <ImageUploader />
+        <ImageUploader
+          value={formData.image}
+          onChange={(val) => handleChange("image", val)}
+        />
       </div>
 
       <div>
         <label>Description</label>
-        <RichTextEditor />
+        <RichTextEditor
+          value={formData.description}
+          onChange={(val) => handleChange("description", val)}
+        />
       </div>
     </div>
   );
 }
 
-export default Container;
+export default ContainerForm;

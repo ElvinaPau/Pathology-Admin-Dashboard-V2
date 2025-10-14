@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 
-const JWT_SECRET = process.env.JWT_SECRET;
-if (!JWT_SECRET) throw new Error("JWT_SECRET not configured");
+const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
+if (!ACCESS_TOKEN_SECRET) throw new Error("ACCESS_TOKEN_SECRET not configured");
 
 function authenticate(req, res, next) {
   const authHeader = req.headers["authorization"];
@@ -13,8 +13,8 @@ function authenticate(req, res, next) {
   const token = authHeader.split(" ")[1];
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    req.user = decoded; // { id, email }
+    const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET);
+    req.user = decoded; // { id, email, full_name }
     next();
   } catch (err) {
     console.error("JWT error:", err.message);
