@@ -3,88 +3,90 @@ import axios from "axios";
 
 const AuthContext = createContext();
 
+let isRefreshing = false;
+let refreshSubscribers = [];
+
+const onRefreshed = (newToken) => {
+  refreshSubscribers.forEach((callback) => callback(newToken));
+  refreshSubscribers = [];
+};
+
 export function AuthProvider({ children }) {
   const [admin, setAdmin] = useState(null);
   const [token, setToken] = useState(localStorage.getItem("token") || null);
   const [loading, setLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Always send cookies with requests
   axios.defaults.withCredentials = true;
 
   // ========================
-  // Auto attach token to axios
+  // Axios Request Interceptor - attach token
   // ========================
   useEffect(() => {
-    if (token) {
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      fetchCurrentAdmin();
-    } else {
-      delete axios.defaults.headers.common["Authorization"];
-      setLoading(false);
-    }
-  }, [token]);
+    const requestInterceptor = axios.interceptors.request.use(
+      (config) => {
+        const currentToken = localStorage.getItem("token");
+        if (currentToken) {
+          config.headers.Authorization = `Bearer ${currentToken}`;
+        }
+        return config;
+      },
+      (error) => Promise.reject(error)
+    );
+
+    return () => {
+      axios.interceptors.request.eject(requestInterceptor);
+    };
+  }, []);
 
   // ========================
-  // Axios Response Interceptor - THIS IS THE NEW PART
+  // Axios Response Interceptor - handle 401/403 and refresh
   // ========================
   useEffect(() => {
-    const interceptor = axios.interceptors.response.use(
+    const responseInterceptor = axios.interceptors.response.use(
       (response) => response,
       async (error) => {
         const originalRequest = error.config;
 
-        // handle both 401 and 403
         if (
           (error.response?.status === 401 || error.response?.status === 403) &&
           !originalRequest._retry
         ) {
           originalRequest._retry = true;
 
-          if (isRefreshing) {
-            return new Promise((resolve) => {
-              const checkRefresh = setInterval(() => {
-                if (!isRefreshing) {
-                  clearInterval(checkRefresh);
-                  originalRequest.headers[
-                    "Authorization"
-                  ] = `Bearer ${localStorage.getItem("token")}`;
-                  resolve(axios(originalRequest));
-                }
-              }, 100);
-            });
-          }
+          if (!isRefreshing) {
+            isRefreshing = true;
+            try {
+              const res = await axios.post(
+                "http://localhost:5001/api/admins/refresh",
+                {},
+                { withCredentials: true }
+              );
 
-          setIsRefreshing(true);
-
-          try {
-            // include withCredentials
-            const res = await axios.post(
-              "http://localhost:5001/api/admins/refresh",
-              {},
-              { withCredentials: true }
-            );
-
-            if (res.data.token) {
-              const newToken = res.data.token;
-              localStorage.setItem("token", newToken);
-              setToken(newToken);
-              axios.defaults.headers.common[
-                "Authorization"
-              ] = `Bearer ${newToken}`;
-              originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
+              if (res.data.token) {
+                const newToken = res.data.token;
+                localStorage.setItem("token", newToken);
+                setToken(newToken);
+                axios.defaults.headers.common[
+                  "Authorization"
+                ] = `Bearer ${newToken}`;
+                onRefreshed(newToken);
+              }
+            } catch (err) {
+              console.warn("Refresh token expired or invalid");
+              logout();
+              return Promise.reject(err);
+            } finally {
+              isRefreshing = false;
             }
-
-            await fetchCurrentAdmin(newToken);
-
-            setIsRefreshing(false);
-            return axios(originalRequest); // retry original request
-          } catch (refreshError) {
-            setIsRefreshing(false);
-            console.warn("Refresh token expired or invalid");
-            logout();
-            return Promise.reject(refreshError);
           }
+
+          return new Promise((resolve) => {
+            refreshSubscribers.push((newToken) => {
+              originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
+              resolve(axios(originalRequest));
+            });
+          });
         }
 
         return Promise.reject(error);
@@ -92,46 +94,41 @@ export function AuthProvider({ children }) {
     );
 
     return () => {
-      axios.interceptors.response.eject(interceptor);
+      axios.interceptors.response.eject(responseInterceptor);
     };
-  }, [isRefreshing]);
-  // Re-create interceptor if isRefreshing changes
+  }, []);
 
   // ========================
   // Fetch current admin info
   // ========================
-  const fetchCurrentAdmin = async (jwtToken) => {
+  const fetchCurrentAdmin = async () => {
+    setLoading(true);
     try {
-      const res = await axios.get("http://localhost:5001/api/admins/me", {
-        headers: {
-          Authorization: `Bearer ${jwtToken || token}`,
-        },
-      });
+      const res = await axios.get("http://localhost:5001/api/admins/me");
       setAdmin(res.data);
     } catch (err) {
       console.error("Error fetching admin:", err);
-      // Don't manually refresh here - the interceptor will handle it
     } finally {
       setLoading(false);
     }
   };
+
   // ========================
-  // Manual refresh access token (for periodic refresh)
+  // Manual refresh token (optional periodic refresh)
   // ========================
   const handleTokenRefresh = async () => {
     try {
       const res = await axios.post(
         "http://localhost:5001/api/admins/refresh",
-        {}, // empty body
-        { withCredentials: true } // ensures refreshToken cookie is sent
+        {},
+        { withCredentials: true }
       );
 
       if (res.data.token) {
-        localStorage.setItem("token", res.data.token);
-        setToken(res.data.token);
-        axios.defaults.headers.common[
-          "Authorization"
-        ] = `Bearer ${res.data.token}`;
+        const newToken = res.data.token;
+        localStorage.setItem("token", newToken);
+        setToken(newToken);
+        axios.defaults.headers.common["Authorization"] = `Bearer ${newToken}`;
       }
     } catch (err) {
       console.warn("Refresh token expired or invalid");
@@ -145,7 +142,7 @@ export function AuthProvider({ children }) {
   const login = (jwtToken) => {
     localStorage.setItem("token", jwtToken);
     setToken(jwtToken);
-    fetchCurrentAdmin(jwtToken);
+    fetchCurrentAdmin();
   };
 
   // ========================
@@ -153,7 +150,11 @@ export function AuthProvider({ children }) {
   // ========================
   const logout = async () => {
     try {
-      await axios.post("http://localhost:5001/api/admins/logout");
+      await axios.post(
+        "http://localhost:5001/api/admins/logout",
+        {},
+        { withCredentials: true }
+      );
     } catch (err) {
       console.error("Logout error:", err.message);
     }
@@ -162,35 +163,32 @@ export function AuthProvider({ children }) {
     setAdmin(null);
   };
 
-  // Update global admin data
+  // ========================
+  // Update admin data
+  // ========================
   const updateAdmin = (updatedData) => {
     setAdmin((prev) => ({ ...prev, ...updatedData }));
   };
 
   // ========================
-  // Auto refresh every 55 minutes (before 1h token expires)
+  // Auto refresh every 55 minutes
   // ========================
   useEffect(() => {
     if (!token) return;
 
-    const refreshInterval = setInterval(() => {
+    const interval = setInterval(() => {
       handleTokenRefresh();
-    }, 55 * 60 * 1000); // every 55 min
+    }, 55 * 60 * 1000); // 55 min
 
-    return () => clearInterval(refreshInterval);
+    return () => clearInterval(interval);
   }, [token]);
 
   // ========================
-  // Auto logout after 10 hours
+  // Fetch admin on initial mount if token exists
   // ========================
   useEffect(() => {
-    if (!token) return;
-
-    const logoutTimer = setTimeout(() => {
-      logout();
-    }, 10 * 60 * 60 * 1000); // 10 hours
-
-    return () => clearTimeout(logoutTimer);
+    if (token) fetchCurrentAdmin();
+    else setLoading(false);
   }, [token]);
 
   return (

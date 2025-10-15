@@ -1,0 +1,42 @@
+/* Page title */
+.prev-page-title {
+  font-size: 25px;
+  font-weight: bold;
+  margin: 20px 0 10px 20px;
+}
+
+/* Categories vertical list */
+.prev-categories-list {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: 1fr;
+  justify-items: center;
+  gap: 1rem;
+}
+
+/* Category card */
+.prev-category-card {
+  height: 20px;
+  width: 100%;
+  max-width: 400px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+  text-align: center;
+  cursor: pointer;
+}
+
+.prev-category-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Card title */
+.prev-category-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-top: 0%;
+}

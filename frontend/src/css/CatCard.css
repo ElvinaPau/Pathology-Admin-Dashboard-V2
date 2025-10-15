@@ -4,7 +4,7 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  height: auto;
+  height: 200px;
   background: white;
   padding: 15px;
   border-radius: 10px;

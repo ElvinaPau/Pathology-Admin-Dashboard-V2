@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
@@ -10,7 +10,7 @@ import LinkModal from "./LinkModal";
 import MenuBar from "./MenuBar";
 import "../css/RichTextEditor.css";
 
-function RichTextEditor() {
+function RichTextEditor({ value = "", onChange }) {
   const [linkPosition, setLinkPosition] = useState({ left: 0, top: 0 });
   const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
   const [defaultLinkText, setDefaultLinkText] = useState("");
@@ -21,12 +21,13 @@ function RichTextEditor() {
       StarterKit.configure({
         orderedList: false, // disable default ordered list
       }),
-      CustomOrderedList,       // custom ordered list supporting a,b,c / i,ii,iii
+      CustomOrderedList, // custom ordered list supporting a,b,c / i,ii,iii
       ResizableImage,
       Link.configure({ openOnClick: true }),
       TextAlign.configure({ types: ["paragraph", "heading", "listItem"] }),
       Underline,
     ],
+    content: value, // Set initial content from prop
     editorProps: {
       handlePaste(view, event) {
         const items = event.clipboardData?.items;
@@ -52,7 +53,21 @@ function RichTextEditor() {
         return false;
       },
     },
+    onUpdate: ({ editor }) => {
+      // Trigger onChange callback when content changes
+      if (onChange) {
+        const html = editor.getHTML();
+        onChange(html);
+      }
+    },
   });
+
+  // Sync editor content when value prop changes (for editing mode)
+  useEffect(() => {
+    if (editor && value !== editor.getHTML()) {
+      editor.commands.setContent(value);
+    }
+  }, [value, editor]);
 
   const openLinkModal = () => {
     if (!editor) return;

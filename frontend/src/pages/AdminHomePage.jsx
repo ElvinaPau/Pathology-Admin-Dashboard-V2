@@ -2,19 +2,20 @@ import React, { useState, useEffect } from "react";
 import HomePageHeader from "../assets/HomePageHeader";
 import CatCard from "../assets/CatCard";
 import ProfileCard from "../assets/ProfileCard";
-import { GrDocumentTest } from "react-icons/gr";
-import { FaUsers } from "react-icons/fa";
-import { GrTest } from "react-icons/gr";
-import "../css/AdminHomePage.css";
 import StatCard from "../assets/StatCard";
 import NewCatInput from "../assets/NewCatInput";
+import { GrDocumentTest, GrTest } from "react-icons/gr";
+import { FaUsers } from "react-icons/fa";
+import "../css/AdminHomePage.css";
 import { useNavigation } from "../context/NavigationContext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 
 function AdminHomePage() {
   const { isNavExpanded } = useNavigation();
   const navigate = useNavigate();
+
   const [showInput, setShowInput] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [adminCount, setAdminCount] = useState(0);
@@ -25,7 +26,9 @@ function AdminHomePage() {
     const fetchCategories = async () => {
       try {
         const res = await axios.get("http://localhost:5001/api/categories");
-        setCategories(res.data);
+        // Sort by position if available
+        const sorted = res.data.sort((a, b) => (a.position ?? a.id) - (b.position ?? b.id));
+        setCategories(sorted);
       } catch (err) {
         console.error("Error fetching categories:", err.message);
       }
@@ -64,14 +67,36 @@ function AdminHomePage() {
 
   // Delete category
   const handleDeleteCategory = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this category?"))
-      return;
+    if (!window.confirm("Are you sure you want to delete this category?")) return;
 
     try {
       await axios.delete(`http://localhost:5001/api/categories/${id}`);
       setCategories(categories.filter((cat) => cat.id !== id));
     } catch (err) {
       console.error("Error deleting category:", err.message);
+    }
+  };
+
+  // Drag-and-drop reorder
+  const handleDragEnd = async (result) => {
+    const { source, destination } = result;
+    if (!destination) return;
+
+    const newCategories = Array.from(categories);
+    const [moved] = newCategories.splice(source.index, 1);
+    newCategories.splice(destination.index, 0, moved);
+
+    setCategories(newCategories);
+
+    const updates = newCategories.map((cat, index) => ({
+      id: cat.id,
+      position: index,
+    }));
+
+    try {
+      await axios.put("http://localhost:5001/api/categories/reorder", { updates });
+    } catch (err) {
+      console.error("Error reordering categories:", err.message);
     }
   };
 
@@ -99,38 +124,65 @@ function AdminHomePage() {
       </div>
 
       {/* Categories */}
-      <div className="categories-section">
-        {categories.map((cat) => (
-          <CatCard
-            key={cat.id}
-            title={cat.name}
-            count={128}
-            icon={<GrTest />}
-            lastUpdated="1 Jan 2025"
-            onClick={() => navigate(`/categories/${cat.id}`)} // 👈 navigate by ID
-            onDelete={() => handleDeleteCategory(cat.id)}
-          />
-        ))}
+      <div className="home-title">Categories</div>
+      <DragDropContext onDragEnd={handleDragEnd}>
+        <Droppable droppableId="categories">
+          {(provided) => (
+            <div
+              className="categories-section"
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+            >
+              {categories.map((cat, index) => (
+                <Draggable key={cat.id} draggableId={cat.id.toString()} index={index}>
+                  {(provided, snapshot) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                      style={{
+                        ...provided.draggableProps.style,
+                        opacity: snapshot.isDragging ? 0.5 : 1,
+                        cursor: "grab",
+                      }}
+                    >
+                      <CatCard
+                        title={cat.name}
+                        count={128}
+                        icon={<GrTest />}
+                        lastUpdated="1 Jan 2025"
+                        onClick={() => navigate(`/categories/${cat.id}`)}
+                        onDelete={() => handleDeleteCategory(cat.id)}
+                      />
+                    </div>
+                  )}
+                </Draggable>
+              ))}
 
-        {/* Add New Category */}
-        {showInput && (
-          <NewCatInput
-            title="Add New Category"
-            value={newCategoryName}
-            onChange={(e) => setNewCategoryName(e.target.value)}
-            onSubmit={handleSubmit}
-            onCancel={() => setShowInput(false)}
-            placeholder="Enter category name"
-          />
-        )}
+              {provided.placeholder}
 
-        <div className="cat-card add-category">
-          <h4>Add New Category</h4>
-          <button className="create-btn" onClick={() => setShowInput(true)}>
-            + Create New
-          </button>
-        </div>
-      </div>
+              {/* Add New Category */}
+              {showInput && (
+                <NewCatInput
+                  title="Add New Category"
+                  value={newCategoryName}
+                  onChange={(e) => setNewCategoryName(e.target.value)}
+                  onSubmit={handleSubmit}
+                  onCancel={() => setShowInput(false)}
+                  placeholder="Enter category name"
+                />
+              )}
+
+              <div className="cat-card add-category">
+                <h4>Add New Category</h4>
+                <button className="create-btn" onClick={() => setShowInput(true)}>
+                  + Create New
+                </button>
+              </div>
+            </div>
+          )}
+        </Droppable>
+      </DragDropContext>
     </div>
   );
 }
