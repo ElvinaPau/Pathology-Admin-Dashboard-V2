@@ -1,18 +1,20 @@
 import React, { useState, useRef, useEffect } from "react";
 import "../css/CatCard.css";
 import { IoMdMore } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
 
 function CatCard({
+  id,
   title,
   count,
   icon,
   lastUpdated,
   onClick,
-  onAdd,
   onDelete,
 }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const navigate = useNavigate();
 
   // Close dropdown if clicked outside
   useEffect(() => {
@@ -52,7 +54,7 @@ function CatCard({
               className="dropdown-item"
               onClick={() => {
                 setDropdownOpen(false);
-                onAdd?.();
+                navigate(`/categories/${id}/add`);
               }}
             >
               Add New Test/Tab

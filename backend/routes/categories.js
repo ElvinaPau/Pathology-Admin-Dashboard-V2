@@ -5,10 +5,25 @@ const pool = require("../db");
 // Helper: validate ID
 const isValidId = (id) => !isNaN(parseInt(id));
 
-// Get all categories
+// Get all categories with test count and last updated info
 router.get("/", async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM categories ORDER BY position ASC");
+    const query = `
+      SELECT 
+        c.id,
+        c.name,
+        c.position,
+        COUNT(t.id) AS "testCount",
+        TO_CHAR(MAX(t.updated_at), 'DD/MM/YYYY') AS "lastUpdated"
+      FROM categories c
+      LEFT JOIN tests t 
+        ON c.id = t.category_id 
+        AND t.status != 'deleted'
+      GROUP BY c.id, c.name, c.position
+      ORDER BY c.position ASC
+    `;
+
+    const result = await pool.query(query);
     res.json(result.rows);
   } catch (err) {
     console.error("Error fetching categories:", err.message);
@@ -144,7 +159,10 @@ router.delete("/:id", async (req, res) => {
     if (result.rows.length === 0)
       return res.status(404).json({ error: "Category not found" });
 
-    res.json({ message: "Category deleted successfully", category: result.rows[0] });
+    res.json({
+      message: "Category deleted successfully",
+      category: result.rows[0],
+    });
   } catch (err) {
     console.error("Error deleting category:", err.message);
     res.status(500).json({ error: "Server error" });

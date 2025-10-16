@@ -27,7 +27,9 @@ function AdminHomePage() {
       try {
         const res = await axios.get("http://localhost:5001/api/categories");
         // Sort by position if available
-        const sorted = res.data.sort((a, b) => (a.position ?? a.id) - (b.position ?? b.id));
+        const sorted = res.data.sort(
+          (a, b) => (a.position ?? a.id) - (b.position ?? b.id)
+        );
         setCategories(sorted);
       } catch (err) {
         console.error("Error fetching categories:", err.message);
@@ -57,7 +59,14 @@ function AdminHomePage() {
       const res = await axios.post("http://localhost:5001/api/categories", {
         name: newCategoryName,
       });
-      setCategories([...categories, res.data]);
+
+      const newCat = {
+      ...res.data,
+      testCount: 0,
+      lastUpdated: new Date().toLocaleDateString(),
+      };
+
+      setCategories([...categories, newCat]);
       setNewCategoryName("");
       setShowInput(false);
     } catch (err) {
@@ -67,7 +76,8 @@ function AdminHomePage() {
 
   // Delete category
   const handleDeleteCategory = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this category?")) return;
+    if (!window.confirm("Are you sure you want to delete this category?"))
+      return;
 
     try {
       await axios.delete(`http://localhost:5001/api/categories/${id}`);
@@ -94,7 +104,9 @@ function AdminHomePage() {
     }));
 
     try {
-      await axios.put("http://localhost:5001/api/categories/reorder", { updates });
+      await axios.put("http://localhost:5001/api/categories/reorder", {
+        updates,
+      });
     } catch (err) {
       console.error("Error reordering categories:", err.message);
     }
@@ -134,7 +146,11 @@ function AdminHomePage() {
               ref={provided.innerRef}
             >
               {categories.map((cat, index) => (
-                <Draggable key={cat.id} draggableId={cat.id.toString()} index={index}>
+                <Draggable
+                  key={cat.id}
+                  draggableId={cat.id.toString()}
+                  index={index}
+                >
                   {(provided, snapshot) => (
                     <div
                       ref={provided.innerRef}
@@ -147,10 +163,11 @@ function AdminHomePage() {
                       }}
                     >
                       <CatCard
+                        id={cat.id}
                         title={cat.name}
-                        count={128}
+                        count={cat.testCount}
                         icon={<GrTest />}
-                        lastUpdated="1 Jan 2025"
+                        lastUpdated={cat.lastUpdated || "N/A"}
                         onClick={() => navigate(`/categories/${cat.id}`)}
                         onDelete={() => handleDeleteCategory(cat.id)}
                       />
@@ -175,7 +192,10 @@ function AdminHomePage() {
 
               <div className="cat-card add-category">
                 <h4>Add New Category</h4>
-                <button className="create-btn" onClick={() => setShowInput(true)}>
+                <button
+                  className="create-btn"
+                  onClick={() => setShowInput(true)}
+                >
                   + Create New
                 </button>
               </div>
