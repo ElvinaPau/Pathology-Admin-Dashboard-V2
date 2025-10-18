@@ -16,12 +16,14 @@ function LabTestForm({ fields = {}, setFields, onRemove, isFirst }) {
     sampleVolume: fields.sampleVolume || "",
     remark: fields.remark || "",
     containerImage: fields.containerImage || null,
+    containerImageFileName: fields.containerImageFileName || null, // Add this
   });
 
   const [isHover, setIsHover] = useState(false);
 
   useEffect(() => {
-    // Sync when parent changes (e.g., when editing existing data)
+    const API_BASE = "http://localhost:5001";
+
     setFormData({
       title: fields.title || "",
       description: fields.description || "",
@@ -32,7 +34,12 @@ function LabTestForm({ fields = {}, setFields, onRemove, isFirst }) {
       containerLabel: fields.containerLabel || "",
       sampleVolume: fields.sampleVolume || "",
       remark: fields.remark || "",
-      containerImage: fields.containerImage || null,
+      containerImage: fields.containerImage
+        ? fields.containerImage.startsWith("http")
+          ? fields.containerImage
+          : `${API_BASE}${fields.containerImage}`
+        : null,
+      containerImageFileName: fields.containerImageFileName || null,
     });
   }, [fields]);
 
@@ -135,22 +142,6 @@ function LabTestForm({ fields = {}, setFields, onRemove, isFirst }) {
               <option value="urine">Urine</option>
             </select>
           </div>
-
-          <div>
-            <label style={{ fontWeight: 600 }}>Description</label>
-            <RichTextEditor
-              value={formData.description}
-              onChange={(val) => handleChange("description", val)}
-            />
-          </div>
-
-          <div>
-            <label style={{ fontWeight: 600 }}>Remark</label>
-            <RichTextEditor
-              value={formData.remark}
-              onChange={(val) => handleChange("remark", val)}
-            />
-          </div>
         </div>
 
         <div className="right">
@@ -168,10 +159,34 @@ function LabTestForm({ fields = {}, setFields, onRemove, isFirst }) {
             <label>Container</label>
             <ImageUploader
               value={formData.containerImage}
-              onChange={(val) => handleChange("containerImage", val)}
+              fileName={formData.containerImageFileName}
+              onChange={(val) => {
+                if (val instanceof File) {
+                  handleChange("containerImage", val);
+                  handleChange("containerImageFileName", val.name);
+                } else {
+                  handleChange("containerImage", val);
+                  handleChange("containerImageFileName", null);
+                }
+              }}
             />
           </div>
         </div>
+      </div>
+      <div>
+        <label style={{ fontWeight: 600 }}>Description</label>
+        <RichTextEditor
+          value={formData.description}
+          onChange={(val) => handleChange("description", val)}
+        />
+      </div>
+
+      <div>
+        <label style={{ fontWeight: 600 }}>Remark</label>
+        <RichTextEditor
+          value={formData.remark}
+          onChange={(val) => handleChange("remark", val)}
+        />
       </div>
     </div>
   );

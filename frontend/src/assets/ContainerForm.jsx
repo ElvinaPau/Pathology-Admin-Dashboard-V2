@@ -5,27 +5,39 @@ import { IoIosRemoveCircleOutline, IoIosRemoveCircle } from "react-icons/io";
 import { ImageUploader } from "./ImageUploader";
 
 function ContainerForm({ fields = {}, setFields, onRemove, isFirst }) {
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5001";
+
   const [formData, setFormData] = useState({
     title: fields.title || "",
     description: fields.description || "",
-    image: fields.image || null,
+    image: null,
+    imageFileName: fields.imageFileName || null,
   });
 
   const [isHover, setIsHover] = useState(false);
 
+  // Safely handle fields update
   useEffect(() => {
-    // Sync when parent changes (e.g., when editing existing data)
+    const imageValue =
+      typeof fields.image === "string"
+        ? fields.image.startsWith("http")
+          ? fields.image
+          : `${API_BASE}${fields.image}`
+        : fields.image || null;
+
     setFormData({
       title: fields.title || "",
       description: fields.description || "",
-      image: fields.image || null,
+      image: imageValue,
+      imageFileName: fields.imageFileName || null,
     });
   }, [fields]);
 
-  const handleChange = (key, value) => {
+  const handleChange = (key, value, fileName = null) => {
     const updated = { ...formData, [key]: value };
+    if (fileName) updated.imageFileName = fileName;
     setFormData(updated);
-    setFields(updated); // Send data to parent
+    setFields(updated);
   };
 
   return (
@@ -35,9 +47,11 @@ function ContainerForm({ fields = {}, setFields, onRemove, isFirst }) {
 
         {!isFirst && (
           <button
+            type="button"
             onClick={onRemove}
             onMouseEnter={() => setIsHover(true)}
             onMouseLeave={() => setIsHover(false)}
+            className="remove-button"
           >
             {isHover ? (
               <IoIosRemoveCircle size={22} />
@@ -61,11 +75,12 @@ function ContainerForm({ fields = {}, setFields, onRemove, isFirst }) {
         <label>Image</label>
         <ImageUploader
           value={formData.image}
-          onChange={(val) => handleChange("image", val)}
+          fileName={formData.imageFileName}
+          onChange={(val, fileName) => handleChange("image", val, fileName)}
         />
       </div>
 
-      <div>
+      <div className="add-form-group">
         <label>Description</label>
         <RichTextEditor
           value={formData.description}
