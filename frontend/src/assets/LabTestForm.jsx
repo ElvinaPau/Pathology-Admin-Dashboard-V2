@@ -4,6 +4,7 @@ import RichTextEditor from "./RichTextEditor";
 import { IoIosRemoveCircleOutline, IoIosRemoveCircle } from "react-icons/io";
 import { ImageUploader } from "./ImageUploader";
 import Select from "react-select";
+import axios from "axios";
 
 function LabTestForm({ fields = {}, setFields, onRemove, isFirst }) {
   const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5001";
@@ -16,7 +17,7 @@ function LabTestForm({ fields = {}, setFields, onRemove, isFirst }) {
       ? [fields.specimenType]
       : [],
     otherSpecimen: fields.otherSpecimen || "",
-    form: { text: "", url: "" },
+    form: fields.form || { text: "", url: "", isCustom: false },
     TAT: fields.TAT || "",
     containerLabel: fields.containerLabel || "",
     sampleVolume: fields.sampleVolume || "",
@@ -26,7 +27,30 @@ function LabTestForm({ fields = {}, setFields, onRemove, isFirst }) {
   });
 
   const [isHover, setIsHover] = useState(false);
+  const [availableForms, setAvailableForms] = useState([]);
+  const [formsLoading, setFormsLoading] = useState(true);
+  const [formsError, setFormsError] = useState(null);
 
+  // Fetch forms from API
+  useEffect(() => {
+    const fetchForms = async () => {
+      try {
+        setFormsLoading(true);
+        const res = await axios.get(`${API_BASE}/api/forms`);
+        setAvailableForms(res.data);
+        setFormsError(null);
+      } catch (err) {
+        console.error("Error fetching forms:", err);
+        setFormsError("Failed to load forms");
+      } finally {
+        setFormsLoading(false);
+      }
+    };
+
+    fetchForms();
+  }, [API_BASE]);
+
+  // Update formData when fields prop changes
   useEffect(() => {
     const imageValue =
       typeof fields.image === "string"
@@ -43,7 +67,7 @@ function LabTestForm({ fields = {}, setFields, onRemove, isFirst }) {
         ? [fields.specimenType]
         : [],
       otherSpecimen: fields.otherSpecimen || "",
-      form: fields.form || { text: "", url: "" },
+      form: fields.form || { text: "", url: "", isCustom: false },
       TAT: fields.TAT || "",
       containerLabel: fields.containerLabel || "",
       sampleVolume: fields.sampleVolume || "",
@@ -51,7 +75,7 @@ function LabTestForm({ fields = {}, setFields, onRemove, isFirst }) {
       image: imageValue,
       imageFileName: fields.imageFileName || null,
     });
-  }, [fields]);
+  }, [fields, API_BASE]);
 
   const handleChange = (key, value, fileName = null) => {
     const updated = { ...formData, [key]: value };
@@ -120,7 +144,7 @@ function LabTestForm({ fields = {}, setFields, onRemove, isFirst }) {
                   label: val,
                 }))}
                 onChange={(selected) => {
-                  const values = selected.map((s) => s.value);
+                  const values = selected ? selected.map((s) => s.value) : [];
                   handleChange("specimenType", values);
                 }}
                 classNamePrefix="react-select"
@@ -146,40 +170,120 @@ function LabTestForm({ fields = {}, setFields, onRemove, isFirst }) {
             <div className="add-form-group">
               <label>Form</label>
 
-              <input
-                type="text"
-                placeholder="Text to display"
-                value={formData.form?.text || ""}
-                onChange={(e) => {
-                  const newForm = { ...formData.form, text: e.target.value };
-                  handleChange("form", newForm);
-                }}
-              />
-
-              <input
-                type="url"
-                placeholder="Link URL (https://...)"
-                value={formData.form?.url || ""}
-                onChange={(e) => {
-                  const newForm = { ...formData.form, url: e.target.value };
-                  handleChange("form", newForm);
-                }}
-              />
-
-              {formData.form?.url && (
-                <a
-                  href={formData.form.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
+              {formsLoading ? (
+                <p style={{ fontSize: "14px", color: "#666", margin: "8px 0" }}>
+                  Loading forms...
+                </p>
+              ) : formsError ? (
+                <p
                   style={{
-                    display: "inline-block",
-                    marginTop: "6px",
-                    color: "#007bff",
-                    textDecoration: "underline",
+                    fontSize: "14px",
+                    color: "#d32f2f",
+                    margin: "8px 0",
                   }}
                 >
-                  {formData.form.text || formData.form.url}
-                </a>
+                  {formsError}
+                </p>
+              ) : (
+                <>
+                  {/* Dropdown selector */}
+                  <select
+                    value={
+                      formData.form?.isCustom
+                        ? "Others..."
+                        : formData.form?.text || ""
+                    }
+                    onChange={(e) => {
+                      const selectedValue = e.target.value;
+                      if (selectedValue === "Others...") {
+                        handleChange("form", {
+                          text: "",
+                          url: "",
+                          isCustom: true,
+                        });
+                      } else if (selectedValue === "") {
+                        handleChange("form", {
+                          text: "",
+                          url: "",
+                          isCustom: false,
+                        });
+                      } else {
+                        const selectedForm = availableForms.find(
+                          (f) => f.link_text === selectedValue
+                        );
+                        if (selectedForm) {
+                          handleChange("form", {
+                            text: selectedForm.link_text,
+                            url: selectedForm.form_url,
+                            isCustom: false,
+                          });
+                        }
+                      }
+                    }}
+                  >
+                    <option value="">Select a form</option>
+                    {availableForms
+                      .filter((f) => f.status !== "deleted")
+                      .map((form) => (
+                        <option key={form.id} value={form.link_text}>
+                          {form.link_text}
+                        </option>
+                      ))}
+                    <option value="Others...">Others...</option>
+                  </select>
+
+                  {/* Show manual input only when "Others..." is selected */}
+                  {formData.form?.isCustom && (
+                    <>
+                      <input
+                        type="text"
+                        placeholder="Text to display"
+                        value={formData.form?.text || ""}
+                        onChange={(e) => {
+                          const newForm = {
+                            text: e.target.value,
+                            url: formData.form?.url || "",
+                            isCustom: true,
+                          };
+                          handleChange("form", newForm);
+                        }}
+                        style={{ marginTop: "8px" }}
+                      />
+
+                      <input
+                        type="url"
+                        placeholder="Link URL (https://...)"
+                        value={formData.form?.url || ""}
+                        onChange={(e) => {
+                          const newForm = {
+                            text: formData.form?.text || "",
+                            url: e.target.value,
+                            isCustom: true,
+                          };
+                          handleChange("form", newForm);
+                        }}
+                        style={{ marginTop: "8px" }}
+                      />
+                    </>
+                  )}
+
+                  {/* Show link preview */}
+                  {formData.form?.url && (
+                    <a
+                      href={formData.form.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        display: "inline-block",
+                        marginTop: "6px",
+                        color: "#007bff",
+                        textDecoration: "underline",
+                      }}
+                    >
+                      {formData.form.text || formData.form.url}
+                    </a>
+                  )}
+                </>
               )}
             </div>
 

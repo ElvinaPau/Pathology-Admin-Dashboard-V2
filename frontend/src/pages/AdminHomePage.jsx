@@ -24,6 +24,24 @@ function AdminHomePage() {
     totalTests: 0,
     lastUpdated: "N/A",
   });
+  const [forms, setForms] = useState([]);
+
+  useEffect(() => {
+    const fetchForms = async () => {
+      try {
+        const res = await axios.get(`http://localhost:5001/api/forms`);
+        setForms(res.data);
+      } catch (err) {
+        console.error("Error fetching forms:", err.message);
+      }
+    };
+    fetchForms();
+  }, []);
+
+  const lastUpdatedForm = forms
+    .map((f) => f.updated_at)
+    .filter(Boolean)
+    .sort((a, b) => new Date(b) - new Date(a))[0];
 
   useEffect(() => {
     const fetchTestStats = async () => {
@@ -54,18 +72,28 @@ function AdminHomePage() {
         );
 
         // Ensure FORM stays last
-        const formCategory = sorted.find((cat) => cat.name === "FORM");
+        let formCategory = sorted.find((cat) => cat.name === "FORM");
+
+        const lastUpdated = lastUpdatedForm
+          ? new Date(lastUpdatedForm).toLocaleDateString()
+          : "N/A";
+
         if (!formCategory) {
           sorted.push({
             id: "fixed-form",
             name: "FORM",
-            testCount: 0,
+            testCount: forms.length,
+            lastUpdated: lastUpdated,
             fixed: true,
           });
         } else {
           sorted = sorted
             .filter((cat) => cat.name !== "FORM")
-            .concat(formCategory);
+            .concat({
+              ...formCategory,
+              testCount: forms.length,
+              lastUpdated: lastUpdated,
+            });
         }
 
         setCategories(sorted);
@@ -74,7 +102,7 @@ function AdminHomePage() {
       }
     };
     fetchCategories();
-  }, []);
+  }, [forms]);
 
   // Fetch admin count
   useEffect(() => {

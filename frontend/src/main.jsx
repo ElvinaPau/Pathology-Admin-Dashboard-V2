@@ -22,6 +22,7 @@ import AdminPreviewPage from "./pages/AdminPreviewPage";
 import PrevTestInfoPage from "./pages/PrevTestInfoPage";
 import PrevTestsPage from "./pages/PrevTestsPage";
 import FixedFormPage from "./assets/FixedFormPage";
+import FormCreate from "./assets/FormCreate";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
@@ -56,6 +57,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             <Route path="/preview" element={<AdminPreviewPage />} />
             <Route path="/prevtests/:id" element={<PrevTestsPage />} />
             <Route path="/testinfos/:id" element={<PrevTestInfoPage />} />
+            <Route path="/form/create" element={<FormCreate />} />
           </Routes>
         </NavigationProvider>
       </AuthProvider>

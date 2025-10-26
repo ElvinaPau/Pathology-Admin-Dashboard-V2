@@ -237,7 +237,7 @@ function AddTabForm() {
         name: formData.name,
         category_id: id,
         updated_by: currentUser?.username || currentUser?.full_name || "Admin",
-        status: "recent",
+        status: "active",
         infos: processedInfos.map(
           ({ uploadedUrl, originalFileName, index, ...info }) => info
         ),

@@ -16,8 +16,8 @@ const TestTable = () => {
     if (!updatedAt) return false;
     const updatedDate = new Date(updatedAt);
     const now = new Date();
-    const diffInDays = (now - updatedDate) / (1000 * 60 * 60 * 24);
-    return diffInDays <= 7;
+    const diffInHours = (now - updatedDate) / (1000 * 60 * 60);
+    return diffInHours <= 24;
   };
 
   // Fetch tests from backend

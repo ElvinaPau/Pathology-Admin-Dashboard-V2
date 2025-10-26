@@ -25,7 +25,7 @@ router.post("/", authenticate, async (req, res) => {
 
       RETURNING id
       `,
-      [name, category_id, updated_by, status || "recent"]
+      [name, category_id, updated_by, status || "active"]
     );
 
     const testId = testResult.rows[0].id;
