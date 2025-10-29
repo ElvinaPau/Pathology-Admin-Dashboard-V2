@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import "../css/AddTabForm.css";
-import "../css/AdminHomePage.css";
 import BasicForm from "./BasicForm";
 import LabTestForm from "./LabTestForm";
 import ContainerForm from "./ContainerForm";
@@ -40,6 +39,7 @@ function AddTabForm() {
   const { id, testId } = useParams();
   const navigate = useNavigate();
   const { isNavExpanded } = useNavigation();
+  const lastFormRef = useRef(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -48,7 +48,7 @@ function AddTabForm() {
     infos: [{ id: uid(), type: "", fields: [] }],
   });
 
-  const lastFormRef = useRef(null);
+  const [isPreviewMode, setIsPreviewMode] = useState(false);
 
   // Fetch category name
   useEffect(() => {
@@ -94,7 +94,6 @@ function AddTabForm() {
               imageFileName: info.extraData?.imageFileName || null,
               ...info.extraData,
             };
-
             return {
               id: uid(),
               type: info.type || "",
@@ -171,25 +170,13 @@ function AddTabForm() {
           const actualType =
             index === 0 ? group.type || formData.infoType : "Basic";
 
-          let title = "";
-          let description = "";
+          let title = group.fields?.title || "";
+          let description = group.fields?.description || "";
           let imageUrl = null;
           let uploadedUrl = null;
           let originalFileName = null;
 
-          // Set title and description based on type
-          if (actualType === "Basic") {
-            title = group.fields?.title || "";
-            description = group.fields?.description || "";
-          } else if (actualType === "Lab Test") {
-            title = "";
-            description = "";
-          } else if (actualType === "Container") {
-            title = group.fields?.title || "";
-            description = group.fields?.description || "";
-          }
-
-          // ✅ Universal image handling - same for all types
+          // Universal image handling
           if (group.fields?.image instanceof File) {
             originalFileName = group.fields.image.name;
             const uploadFormData = new FormData();
@@ -207,23 +194,19 @@ function AddTabForm() {
               imageUrl = null;
             }
           } else if (typeof group.fields?.image === "string") {
-            // Already a URL (editing existing)
             imageUrl = group.fields.image;
             originalFileName = group.fields?.imageFileName || null;
           }
 
           return {
             type: actualType,
-            title: title,
-            description: description,
+            title,
+            description,
             image_url: imageUrl,
             extra_data: {
               ...group.fields,
               ...(uploadedUrl
-                ? {
-                    image: uploadedUrl,
-                    imageFileName: originalFileName,
-                  }
+                ? { image: uploadedUrl, imageFileName: originalFileName }
                 : {}),
             },
             uploadedUrl,
@@ -251,28 +234,188 @@ function AddTabForm() {
         alert("Test created successfully!");
       }
 
-      setFormData((prev) => ({
-        ...prev,
-        infos: prev.infos.map((group, idx) => {
-          const processedInfo = processedInfos[idx];
-          if (!processedInfo.uploadedUrl) return group;
-
-          return {
-            ...group,
-            fields: {
-              ...group.fields,
-              image: processedInfo.uploadedUrl,
-              imageFileName: processedInfo.originalFileName,
-            },
-          };
-        }),
-      }));
+      setIsPreviewMode(true); // Show preview after saving
     } catch (err) {
       console.error("Error saving test:", err);
       alert("Failed to save test. Check console for details.");
     }
   };
 
+  if (isPreviewMode) {
+    return (
+      <div
+        className={`home-page-content ${isNavExpanded ? "Nav-Expanded" : ""}`}
+      >
+        <HomePageHeader />
+        <div className="prev-header">
+          <div className="prev-header-title">
+            <div className="prev-page-title">{formData.name}</div>
+          </div>
+
+          <div className="test-info-details">
+            {formData.infos.map((info, index) => {
+              const d = info.fields || {};
+              const imageSrc =
+                d.image && typeof d.image === "string"
+                  ? d.image.startsWith("http")
+                    ? d.image
+                    : `http://localhost:5001${d.image}`
+                  : null;
+
+              return (
+                <div key={index} className="extra-data">
+                  {d.title && <h2>{d.title}</h2>}
+
+                  {d.labInCharge && (
+                    <p>
+                      <strong>Lab In-Charge:</strong>
+                      <br />
+                      {d.labInCharge}
+                    </p>
+                  )}
+
+                  {(d.specimenType || d.otherSpecimen) && (
+                    <p>
+                      <strong>Specimen Type:</strong>
+                      <br />
+                      {[
+                        ...(Array.isArray(d.specimenType)
+                          ? d.specimenType.filter((t) => t !== "Others...")
+                          : [d.specimenType].filter(
+                              (t) => t && t !== "Others..."
+                            )),
+                        d.otherSpecimen,
+                      ]
+                        .filter(Boolean)
+                        .map((type, i) => (
+                          <React.Fragment key={i}>
+                            <span
+                              dangerouslySetInnerHTML={{
+                                __html: type.replace(/\n/g, "<br />"),
+                              }}
+                            />
+                            <br />
+                          </React.Fragment>
+                        ))}
+                    </p>
+                  )}
+
+                  {d.form && (d.form.text || d.form.url) && (
+                    <p>
+                      <strong>Form:</strong>
+                      <br />
+                      {d.form.url ? (
+                        <a
+                          href={d.form.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            color: "#007bff",
+                            textDecoration: "underline",
+                          }}
+                        >
+                          {d.form.text || d.form.url}
+                        </a>
+                      ) : (
+                        d.form.text
+                      )}
+                    </p>
+                  )}
+
+                  {d.TAT && (
+                    <p>
+                      <strong>TAT:</strong>
+                      <br />
+                      <span
+                        dangerouslySetInnerHTML={{
+                          __html: d.TAT.replace(/\n/g, "<br />"),
+                        }}
+                      />
+                    </p>
+                  )}
+
+                  {imageSrc && (
+                    <div
+                      className="image-section"
+                      style={{ marginBottom: "0px" }}
+                    >
+                      <p style={{ marginBottom: "2px", lineHeight: "1" }}>
+                        <strong>Container:</strong>
+                      </p>
+                      <img
+                        src={imageSrc}
+                        alt={d.containerLabel || "Container"}
+                        style={{
+                          maxWidth: "250px",
+                          display: "block",
+                          marginBottom: "0px",
+                          marginTop: "0px",
+                        }}
+                      />
+                    </div>
+                  )}
+
+                  {d.containerLabel && (
+                    <p style={{ marginTop: "2px", lineHeight: "1" }}>
+                      {d.containerLabel}
+                    </p>
+                  )}
+
+                  {d.sampleVolume && (
+                    <p>
+                      <strong>Sample Volume:</strong>
+                      <br />
+                      <span
+                        dangerouslySetInnerHTML={{
+                          __html: d.sampleVolume.replace(/\n/g, "<br />"),
+                        }}
+                      />
+                    </p>
+                  )}
+
+                  {d.description && (
+                    <div
+                      className="rich-text-content"
+                      dangerouslySetInnerHTML={{ __html: d.description }}
+                    />
+                  )}
+
+                  {d.remark && (
+                    <div>
+                      <p style={{ marginTop: "5px", marginBottom: "0" }}>
+                        <strong>Remark:</strong>
+                      </p>
+                      <div
+                        dangerouslySetInnerHTML={{ __html: d.remark }}
+                        style={{ margin: 0, lineHeight: 0 }}
+                      />
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="preview-edit-btn-wrapper">
+            <button
+              className="edit-btn"
+              onClick={() => setIsPreviewMode(false)}
+            >
+              Edit Test
+            </button>
+            <button
+              className="back-btn"
+              onClick={() => navigate(`/categories/${id}`)}
+            >
+              Done
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ---- Normal edit mode ----
   return (
     <div className={`home-page-content ${isNavExpanded ? "Nav-Expanded" : ""}`}>
       <div className="form-page-wrapper">
@@ -352,10 +495,10 @@ function AddTabForm() {
                     {formData.infos.map((group, index) => {
                       const FormComponent =
                         index === 0
-                          ? getFormComponent(group.type) // first form uses selected type
+                          ? getFormComponent(group.type)
                           : formData.infoType === "Container"
-                          ? getFormComponent("Container") // extra forms follow Container type
-                          : getFormComponent("Basic"); // otherwise extra forms are Basic
+                          ? getFormComponent("Container")
+                          : getFormComponent("Basic");
 
                       if (index === 0) {
                         return (
@@ -373,7 +516,7 @@ function AddTabForm() {
                                   return { ...prev, infos: newinfos };
                                 });
                               }}
-                              onRemove={null} // main form cannot be removed
+                              onRemove={null}
                               isFirst={index === 0}
                             />
                           </div>
@@ -413,12 +556,17 @@ function AddTabForm() {
                                   });
                                 }}
                                 onRemove={() => {
-                                  setFormData((prev) => ({
-                                    ...prev,
-                                    infos: prev.infos.filter(
-                                      (_, i) => i !== index
-                                    ),
-                                  }));
+                                  const confirmed = window.confirm(
+                                    "Are you sure you want to remove this form?"
+                                  );
+                                  if (confirmed) {
+                                    setFormData((prev) => ({
+                                      ...prev,
+                                      infos: prev.infos.filter(
+                                        (_, i) => i !== index
+                                      ),
+                                    }));
+                                  }
                                 }}
                               />
                             </div>
@@ -444,7 +592,7 @@ function AddTabForm() {
               className="save-all-btn"
               onClick={handleSaveAll}
             >
-              💾 Save All
+              💾 Save & Preview
             </button>
           </div>
         )}

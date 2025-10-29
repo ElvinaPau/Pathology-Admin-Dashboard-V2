@@ -2,9 +2,9 @@
   width: 70%;
   margin: 40px auto;
   background: #fff;
-  padding: 30px 40px;       /* inner spacing */
-  border-radius: 16px;      /* rounded corners */
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); /* soft shadow */
+  padding: 30px 40px;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
 }
 
 .add-form-container {
@@ -110,13 +110,7 @@ button {
 
 /* Remove entry button */
 .remove-btn {
-  background: #dc3545;
-  color: #fff;
   margin-top: 10px;
-}
-
-.remove-btn:hover {
-  background: #a71d2a;
 }
 
 /* Add Another Basic Form button */

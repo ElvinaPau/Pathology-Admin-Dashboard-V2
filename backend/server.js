@@ -40,6 +40,7 @@ const testsRouter = require("./routes/tests");
 const testInfosRouter = require("./routes/testInfos");
 const imgUploadRoutes = require("./routes/imgUploads");
 const formRoutes = require("./routes/forms");
+const contactsRoute = require("./routes/contacts");
 
 app.use("/api/admins", adminRoutes);
 app.use("/api/categories", categoryRoutes);
@@ -47,6 +48,7 @@ app.use("/api/tests", testsRouter);
 app.use("/api/test-infos", testInfosRouter);
 app.use("/api/uploads", imgUploadRoutes);
 app.use("/api/forms", formRoutes);
+app.use("/api/contacts", contactsRoute);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

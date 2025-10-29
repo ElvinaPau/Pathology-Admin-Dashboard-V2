@@ -149,3 +149,7 @@
   background: rgba(43, 124, 255, 0.08);
   border-radius: 8px;
 }
+
+hr {
+  width: 80%;
+}

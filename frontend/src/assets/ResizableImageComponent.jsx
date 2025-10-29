@@ -14,7 +14,6 @@ const ResizableImageComponent = ({ node, updateAttributes, selected }) => {
   const [aspectRatio, setAspectRatio] = useState(1.5);
 
   const maxWidth = 300;
-  const maxHeight = 200;
 
   useEffect(() => {
     const img = new Image();
@@ -24,17 +23,19 @@ const ResizableImageComponent = ({ node, updateAttributes, selected }) => {
       setNaturalSize({ width: img.naturalWidth, height: img.naturalHeight });
       setAspectRatio(ratio);
 
-      let finalWidth = Math.min(img.naturalWidth, maxWidth);
-      let finalHeight = finalWidth / ratio;
-      if (finalHeight > maxHeight) {
-        finalHeight = maxHeight;
-        finalWidth = maxHeight * ratio;
-      }
+      // Only set initial dimensions if width/height haven't been explicitly set
+      // Check if dimensions are at default values (300x200)
+      if (node.attrs.width === 300 && node.attrs.height === 200) {
+        // Calculate width constrained by maxWidth
+        let finalWidth = Math.min(img.naturalWidth, maxWidth);
+        // Height automatically follows width with aspect ratio
+        let finalHeight = finalWidth / ratio;
 
-      updateAttributes({
-        width: finalWidth,
-        height: finalHeight,
-      });
+        updateAttributes({
+          width: finalWidth,
+          height: finalHeight,
+        });
+      }
     };
   }, [src]);
 
@@ -42,6 +43,9 @@ const ResizableImageComponent = ({ node, updateAttributes, selected }) => {
   const displayHeight = aspectRatio
     ? displayWidth / aspectRatio
     : naturalSize.height;
+
+  // Calculate max height based on max width and aspect ratio
+  const maxHeight = aspectRatio ? maxWidth / aspectRatio : Infinity;
 
   return (
     <NodeViewWrapper
@@ -75,11 +79,8 @@ const ResizableImageComponent = ({ node, updateAttributes, selected }) => {
         <div
           className="resizable-image-container"
           style={{
-            width: "100%",
-            height: "100%",
             outline: selected ? "2px solid #87cefb" : "none",
             boxSizing: "border-box",
-            position: "relative",
           }}
         >
           <img
@@ -92,6 +93,7 @@ const ResizableImageComponent = ({ node, updateAttributes, selected }) => {
               display: "block",
               pointerEvents: "none",
               userSelect: "none",
+
             }}
           />
           <span className="resize-handle" />

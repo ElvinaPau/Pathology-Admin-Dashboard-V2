@@ -3,6 +3,8 @@ import {
   AiFillHome,
   AiOutlineMobile,
   AiFillMobile,
+  AiOutlinePhone,
+  AiFillPhone,
 } from "react-icons/ai";
 import { PiUsersThree, PiUsersThreeFill } from "react-icons/pi";
 import { FaSignOutAlt } from "react-icons/fa";
@@ -84,6 +86,27 @@ function SideNav({ isExpanded }) {
                     <AiOutlineMobile className="nav-icon" />
                   )}
                   {isExpanded && <span className="nav-text">Preview</span>}
+                </>
+              )}
+            </NavLink>
+          </li>
+
+          <hr />
+
+          {/* Contacts */}
+          <li data-label="Contacts">
+            <NavLink
+              to="/contacts"
+              className={({ isActive }) => (isActive ? "active" : "")}
+            >
+              {({ isActive }) => (
+                <>
+                  {isActive ? (
+                    <AiFillPhone className="nav-icon" />
+                  ) : (
+                    <AiOutlinePhone className="nav-icon" />
+                  )}
+                  {isExpanded && <span className="nav-text">Contacts</span>}
                 </>
               )}
             </NavLink>
