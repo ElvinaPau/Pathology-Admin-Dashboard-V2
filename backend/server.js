@@ -8,10 +8,16 @@ const path = require("path");
 const app = express();
 const PORT = process.env.PORT || 5001;
 
+// CORS to allow your iPhone to connect
 app.use(
   cors({
-    origin: "http://localhost:5173", // your React app's URL
-    credentials: true, // allow cookies, auth headers, etc.
+    origin: [
+      "http://localhost:5173", // React app
+      "http://10.167.177.31:5173", // React app via IP
+      "http://localhost:*", // Any localhost port
+      "http://10.167.177.31:*", // Any port on your IP (for Flutter)
+    ],
+    credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
@@ -50,6 +56,9 @@ app.use("/api/uploads", imgUploadRoutes);
 app.use("/api/forms", formRoutes);
 app.use("/api/contacts", contactsRoute);
 
-app.listen(PORT, () => {
+// Listen on all network interfaces (0.0.0.0) instead of just localhost
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server is running on port ${PORT}`);
+  console.log(`Local: http://localhost:${PORT}`);
+  console.log(`Network: http://10.167.177.31:${PORT}`);
 });
