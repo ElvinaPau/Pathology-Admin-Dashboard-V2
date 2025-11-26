@@ -147,12 +147,12 @@ const AdminTable = () => {
           <table>
             <colgroup>
               <col style={{ width: "2%" }} /> {/* No */}
-              <col style={{ width: "20%" }} /> {/* Name */}
-              <col style={{ width: "15%" }} /> {/* Department */}
+              <col style={{ width: "15%" }} /> {/* Name */}
+              <col style={{ width: "10%" }} /> {/* Department */}
               <col style={{ width: "20%" }} /> {/* Email Address */}
               <col style={{ width: "20%" }} /> {/* Notes */}
-              <col style={{ width: "15%" }} /> {/* Time */}
-              <col style={{ width: "8%" }} /> {/* Status */}
+              <col style={{ width: "13%" }} /> {/* Time */}
+              <col style={{ width: "13%" }} /> {/* Status */}
             </colgroup>
 
             <thead>

@@ -1,5 +1,5 @@
 .home-page-content {
-  background-color: #ffeafd;
+  background-color: #f6f1fb;
   margin-left: 74px;
   margin-top: 78px;
   height: calc(99vh - 78px);
@@ -10,8 +10,8 @@
 }
 
 .home-page-content.Nav-Expanded {
-  margin-left: 190px;
-  width: calc(100% - 183px);
+  margin-left: 200px;
+  width: calc(100% - 193px);
 }
 
 .home-title {
@@ -29,7 +29,7 @@
 .categories-section {
   margin-right: 15px;
   display: grid;
-  grid-template-columns: repeat(5, minmax(200px, 1fr));
+  grid-template-columns: repeat(7, minmax(20px, 1fr));
 }
 
 .add-category {

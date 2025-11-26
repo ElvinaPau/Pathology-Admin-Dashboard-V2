@@ -1,0 +1,245 @@
+.admin-signup-container {
+  display: flex;
+  flex-direction: row;
+  height: 98vh;
+  width: 99vw;
+}
+
+.admin-htaaq-logo-image-container {
+  flex: 1;
+  display: flex;
+  background: #f6f1fb;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.admin-htaaq-logo-image-container.move-up {
+  align-items: center;
+}
+
+.left-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 600px;
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.htaaq-logo-image {
+  width: 50%;
+  max-width: 450px;
+  object-fit: contain;
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.move-up .htaaq-logo-image {
+  width: 38%;
+  max-width: 280px;
+}
+
+.admin-note {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: #fff;
+  border-radius: 12px;
+  border-left: 4px solid #ffa726;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  max-width: 500px;
+  width: 80%;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: slideUpFadeIn 0.6s ease 0.3s forwards;
+}
+
+@keyframes slideUpFadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.admin-note strong {
+  color: #f57c00;
+}
+
+.admin-note ul {
+  margin: 0.8rem 0 0 0;
+  padding-left: 1.2rem;
+  color: #555;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.admin-note li {
+  margin-bottom: 0.5rem;
+}
+
+.admin-signup-divider {
+  width: 1px;
+  height: 80%;
+  background-color: #cfd8e6;
+  align-self: center;
+}
+
+.admin-signup-form-container {
+  flex: 1.5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.admin-signup-bg {
+  width: 100%;
+  max-width: 420px;
+  background-color: #ffffff;
+  padding: 3rem;
+  border-radius: 12px;
+  box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e3e8ef;
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.admin-signup-bg h2 {
+  font-weight: 600;
+  margin-top: 0%;
+  margin-bottom: 0%;
+}
+
+.signup-des {
+  color: #444;
+  font-size: 0.95rem;
+}
+
+.signup-form-text {
+  margin-top: 30px;
+}
+
+label.required::after {
+  content: " *";
+  color: red;
+}
+
+.input-textbox,
+select,
+textarea {
+  margin-top: 5px;
+  width: 100%;
+  padding: 10px 12px;
+  box-sizing: border-box;
+  border: 1px solid #cbd5e1;
+  font-size: 1rem;
+  border-radius: 8px;
+  background: #f9fbff;
+  transition: 0.2s ease;
+  font-family: inherit;
+}
+
+.signup-form-text select {
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 40px;
+}
+
+textarea {
+  font-family: inherit;
+}
+
+.input-textbox:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 6px rgba(74, 144, 226, 0.4);
+}
+
+a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.signup-btn {
+  margin-top: 35px;
+  width: 100%;
+  height: 45px;
+  background: #8b5cf6;
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.signup-btn:hover {
+  background: #7c3aed;
+  transform: translateY(-2px);
+}
+
+.signup-btn:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+  transform: none;
+}
+
+@media (max-width: 768px) {
+  .admin-signup-container {
+    flex-direction: column;
+    padding: 15px;
+  }
+
+  .admin-signup-divider {
+    display: none;
+  }
+
+  .admin-htaaq-logo-image-container {
+    margin-top: 20px;
+  }
+
+  .admin-htaaq-logo-image-container.move-up {
+    padding-top: 4vh;
+  }
+
+  .htaaq-logo-image {
+    width: 60%;
+  }
+
+  .move-up .htaaq-logo-image {
+    width: 45%;
+  }
+
+  .admin-note {
+    width: 95%;
+    padding: 1rem;
+    font-size: 0.9rem;
+  }
+
+  .admin-signup-bg {
+    margin-top: 25px;
+    padding: 2rem;
+  }
+}

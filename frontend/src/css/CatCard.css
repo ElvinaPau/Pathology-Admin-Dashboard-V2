@@ -1,14 +1,15 @@
 .cat-card {
   margin-left: 15px;
   margin-bottom: 10px;
+  width: 120px;
+  height: 120px;
   position: relative;
   display: flex;
   flex-direction: column;
-  height: 200px;
   background: white;
   padding: 15px;
   border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); */
 }
 
 .more-icon {
@@ -28,13 +29,18 @@
 }
 
 .cat-card .icon {
-  font-size: 30px;
-  margin-bottom: 10px; /* spacing from title/subtitle */
+  font-size: 20px;
+}
+.details p{
+  margin-top: 0%;
+  margin-bottom: 0%;
+   min-height: 32px;
+  line-height: 16px;
 }
 
 .card-subtitle {
   margin-bottom: 0%;
-  font-size: 14px;
+  font-size: 10px;
   color: #6b7280;
 }
 

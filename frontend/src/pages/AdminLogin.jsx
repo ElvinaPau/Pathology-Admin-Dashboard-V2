@@ -19,8 +19,6 @@ function AdminLogin() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  axios.defaults.withCredentials = true;
-
   // handle input change
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -43,9 +41,14 @@ function AdminLogin() {
         { withCredentials: true }
       );
 
-      login(res.data.token);
+      // Use login from AuthContext
+      // This will:
+      // 1. Store token in localStorage
+      // 2. Update token state
+      // 3. Fetch current admin info
+      login(res.data);
 
-      // redirect to dashboard
+      // Redirect to dashboard
       navigate("/home");
     } catch (err) {
       console.error(err.response?.data || err.message);
@@ -58,7 +61,9 @@ function AdminLogin() {
   return (
     <div className="admin-login-container">
       <div className="admin-htaaq-logo-image-container">
-        <img src={HtaaQLogo} alt="HTAA Logo" className="htaaq-logo-image" />
+        <div className="left-container">
+          <img src={HtaaQLogo} alt="HTAA Logo" className="htaaq-logo-image" />
+        </div>
       </div>
 
       <div className="admin-login-divider"></div>
@@ -69,10 +74,8 @@ function AdminLogin() {
 
           <div className="login-des">
             <p>
-              Doesn’t have an account yet?{" "}
-              <Link to="/admin-signup" style={{ color: "blue" }}>
-                Sign up
-              </Link>
+              Doesn't have an account yet?{" "}
+              <Link to="/admin-signup">Sign up</Link>
             </p>
           </div>
 
@@ -123,9 +126,7 @@ function AdminLogin() {
             {error && <p className="error-text">{error}</p>}
 
             <div style={{ marginTop: "10px" }}>
-              <Link to="/admin-forgot-password" style={{ color: "blue" }}>
-                Forgot Password?
-              </Link>
+              <Link to="/admin-forgot-password">Forgot Password?</Link>
             </div>
 
             <button type="submit" className="login-btn" disabled={loading}>

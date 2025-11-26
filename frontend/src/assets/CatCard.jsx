@@ -3,15 +3,7 @@ import "../css/CatCard.css";
 import { IoMdMore } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 
-function CatCard({
-  id,
-  title,
-  count,
-  icon,
-  lastUpdated,
-  onClick,
-  onDelete,
-}) {
+function CatCard({ id, title, count, icon, onClick, onDelete }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
@@ -32,9 +24,8 @@ function CatCard({
       <div>
         <div className="icon">{icon}</div>
         <div className="details">
-          <h4>{title}</h4>
-          <h2>{count}</h2>
-          <p className="card-subtitle">Last updated on {lastUpdated}</p>
+          <p>{title}</p>
+          <h3>{count}</h3>
         </div>
       </div>
 

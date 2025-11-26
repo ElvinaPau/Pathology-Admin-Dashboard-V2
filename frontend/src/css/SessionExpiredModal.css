@@ -1,0 +1,77 @@
+/* Overlay */
+.session-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+/* Modal box */
+.session-modal {
+  background: #fff;
+  border-radius: 12px;
+  padding: 30px 20px;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* Icon */
+.session-icon {
+  margin-bottom: 20px;
+}
+
+/* Headings and text */
+.session-modal h2 {
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+
+.session-modal p {
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+/* Countdown */
+.countdown {
+  font-size: 28px;
+  font-weight: bold;
+  color: orange;
+  margin-bottom: 20px;
+}
+
+/* Buttons */
+.session-modal button {
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  margin: 5px;
+}
+
+.session-modal button:first-child {
+  background-color: #ff4d4d;
+  color: white;
+}
+
+.session-modal button:first-child:hover {
+  background-color: red;
+  cursor: pointer;
+}
+
+.session-modal button:last-child {
+  background-color: #8b5cf6;
+  color: white;
+}
+
+.session-modal button:last-child:hover {
+  background: #7c3aed;
+}

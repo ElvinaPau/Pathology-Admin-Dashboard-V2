@@ -1,0 +1,37 @@
+.admin-quick-table {
+  background: #fff;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+}
+
+.admin-quick-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-quick-table th,
+.admin-quick-table td {
+  text-align: left;
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+}
+
+.admin-quick-table select {
+  padding: 4px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.status.approved {
+  color: green;
+}
+
+.status.pending {
+  color: orange;
+}
+
+.status.rejected {
+  color: red;
+}

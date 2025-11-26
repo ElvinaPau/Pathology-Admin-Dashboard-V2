@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import "../css/AdminLogin.css";
+import "../css/AdminForgotPass.css";
+import { Link } from "react-router-dom";
 import HtaaQLogo from "../assets/HtaaQ-logo.png";
 import axios from "axios";
 
@@ -16,7 +17,7 @@ function AdminForgotPassword() {
     setLoading(true);
 
     try {
-      // 1. Check if email exists
+      // Check if email exists
       const checkRes = await axios.get(`/api/admins/check?email=${email}`);
       if (!checkRes.data.exists) {
         setStatusMessage("This email is not registered.");
@@ -36,7 +37,7 @@ function AdminForgotPassword() {
         return;
       }
 
-      // 2. If valid → request reset link
+      // If valid, request reset link
       const res = await axios.post("/api/admins/forgot-password", { email });
       setStatusMessage(
         res.data.message ||
@@ -53,15 +54,15 @@ function AdminForgotPassword() {
   };
 
   return (
-    <div className="admin-login-container">
+    <div className="admin-forgotpass-container">
       <div className="admin-htaaq-logo-image-container">
         <img src={HtaaQLogo} alt="HTAA Logo" className="htaaq-logo-image" />
       </div>
 
-      <div className="admin-login-divider"></div>
+      <div className="admin-forgotpass-divider"></div>
 
-      <div className="admin-login-form-container">
-        <div className="admin-login-bg">
+      <div className="admin-forgotpass-form-container">
+        <div className="admin-forgotpass-bg">
           <h2>Forgot Password</h2>
 
           <p style={{ marginBottom: "15px" }}>
@@ -70,7 +71,7 @@ function AdminForgotPassword() {
           </p>
 
           <form onSubmit={handleSubmit}>
-            <div className="login-form-text">
+            <div className="forgotpass-form-text">
               <label htmlFor="email" className="required">
                 Email Address
               </label>
@@ -88,9 +89,10 @@ function AdminForgotPassword() {
 
             {statusMessage && <p className="error-text">{statusMessage}</p>}
 
-            <button type="submit" className="login-btn" disabled={loading}>
+            <button type="submit" className="forgotpass-btn" disabled={loading}>
               {loading ? "Sending..." : "SEND RESET LINK"}
             </button>
+            <Link className="forgotpass-link" to="/">Back to login</Link>
           </form>
         </div>
       </div>

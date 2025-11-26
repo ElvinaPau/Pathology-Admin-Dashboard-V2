@@ -1,4 +1,4 @@
-.admin-login-container {
+.admin-forgotpass-container {
   display: flex;
   flex-direction: row;
   height: 98vh;
@@ -13,35 +13,27 @@
   align-items: center;
 }
 
-.left-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  max-width: 600px;
-}
-
 .htaaq-logo-image {
   width: 50%;
   max-width: 450px;
   object-fit: contain;
 }
 
-.admin-login-divider {
+.admin-forgotpass-divider {
   width: 1px;
   height: 80%;
   background-color: #cfd8e6;
   align-self: center;
 }
 
-.admin-login-form-container {
+.admin-forgotpass-form-container {
   flex: 1.5;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.admin-login-bg {
+.admin-forgotpass-bg {
   width: 100%;
   max-width: 420px;
   background-color: #fff;
@@ -63,18 +55,18 @@
   }
 }
 
-.admin-login-bg h2 {
+.admin-forgotpass-bg h2 {
   font-weight: 600;
   margin-top: 0%;
   margin-bottom: 0%;
 }
 
-.login-des {
+.admin-forgotpass-bg p {
   color: #444;
   font-size: 0.95rem;
 }
 
-.login-form-text {
+.forgotpass-form-text {
   margin-top: 30px;
 }
 
@@ -101,35 +93,6 @@ label.required::after {
   box-shadow: 0 0 6px rgba(74, 144, 226, 0.4);
 }
 
-.password-container {
-  position: relative;
-}
-
-.toggle-password {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  cursor: pointer;
-  z-index: 2;
-}
-
-.eye-icon {
-  margin-top: 8px;
-  font-size: 22px;
-  color: #707070;
-}
-
-.eye-icon:hover {
-  color: #000000;
-}
-
-.error-text {
-  color: #d9534f;
-  font-size: 0.9rem;
-  margin-top: 5px;
-}
-
 a {
   color: #007bff;
   text-decoration: none;
@@ -139,7 +102,14 @@ a:hover {
   text-decoration: underline;
 }
 
-.login-btn {
+.forgotpass-link {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.forgotpass-btn {
   margin-top: 35px;
   width: 100%;
   height: 45px;
@@ -154,24 +124,24 @@ a:hover {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
 }
 
-.login-btn:hover {
+.forgotpass-btn:hover {
   background: #7c3aed;
   transform: translateY(-2px);
 }
 
-.login-btn:disabled {
+.forgotpass-btn:disabled {
   background: #6c757d;
   cursor: not-allowed;
   transform: none;
 }
 
 @media (max-width: 768px) {
-  .admin-login-container {
+  .admin-forgotpass-container {
     flex-direction: column;
     padding: 15px;
   }
 
-  .admin-login-divider {
+  .admin-forgotpass-divider {
     display: none;
   }
 
@@ -183,7 +153,7 @@ a:hover {
     width: 60%;
   }
 
-  .admin-login-bg {
+  .admin-forgotpass-bg {
     margin-top: 25px;
     padding: 2rem;
   }

@@ -7,13 +7,9 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const authenticate = require("../middleware/authenticate");
 
-// Ensure JWT secret exists
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) throw new Error("JWT_SECRET not configured");
 
-// ========================
-// GET all admins (admin-only usage, optional protect later)
-// ========================
 router.get("/", async (req, res) => {
   try {
     const result = await pool.query(
@@ -29,9 +25,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// ========================
 // Verify reset token
-// ========================
 router.get("/verify-token/:token", async (req, res) => {
   const { token } = req.params;
   const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
@@ -53,9 +47,7 @@ router.get("/verify-token/:token", async (req, res) => {
   }
 });
 
-// ========================
 // Set new password
-// ========================
 router.post("/set-password/:token", async (req, res) => {
   const { token } = req.params;
   const { password } = req.body;
@@ -83,9 +75,7 @@ router.post("/set-password/:token", async (req, res) => {
   }
 });
 
-// ========================
 // Forgot password
-// ========================
 router.post("/forgot-password", async (req, res) => {
   const { email } = req.body;
 
@@ -135,9 +125,7 @@ router.post("/forgot-password", async (req, res) => {
   }
 });
 
-// ========================
 // Check if email exists
-// ========================
 router.get("/check", async (req, res) => {
   try {
     const { email } = req.query;
@@ -162,10 +150,7 @@ router.get("/check", async (req, res) => {
   }
 });
 
-// ========================
 // Login (with refresh token)
-// ========================
-
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
@@ -192,29 +177,28 @@ router.post("/login", async (req, res) => {
       return res.status(404).json({ error: "Wrong password" });
     }
 
-    // Generate short-lived access token (1h)
+    // Generate short-lived access token (70s for testing)
     const accessToken = jwt.sign(
       { id: admin.id, email: admin.email, full_name: admin.full_name },
       process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "70s" }
     );
 
-    // Generate refresh token (1 day)
+    // ✅ Generate refresh token (10min for testing, 24h in production)
     const refreshToken = jwt.sign(
       { id: admin.id, email: admin.email, full_name: admin.full_name },
       process.env.REFRESH_TOKEN_SECRET,
-      { expiresIn: "1d" }
+      { expiresIn: "10m" } // 10 min > 5 min max session (for testing)
     );
 
     // Send refresh token as secure HTTP-only cookie
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: false, // ❗ set to true in production (HTTPS)
+      secure: false, // set to true in production (HTTPS)
       sameSite: "Strict",
-      maxAge: 10 * 60 * 60 * 1000, // 10h
+      maxAge: 10 * 60 * 1000, // 10 minutes
     });
 
-    // Send access token + admin info
     res.json({
       token: accessToken,
       admin: {
@@ -231,26 +215,55 @@ router.post("/login", async (req, res) => {
   }
 });
 
+// Refresh token: issue new tokens with ROTATION
 router.post("/refresh", (req, res) => {
-  const refreshToken = req.cookies.refreshToken;
-  if (!refreshToken) return res.status(401).json({ error: "No refresh token" });
+  const oldRefreshToken = req.cookies.refreshToken;
 
-  jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, decoded) => {
-    if (err)
-      return res
-        .status(403)
-        .json({ error: "Invalid or expired refresh token" });
+  if (!oldRefreshToken) {
+    console.log("REFRESH FAILED: No refresh token in cookies");
+    return res.status(401).json({ error: "No refresh token" });
+  }
 
-    const newAccessToken = jwt.sign(
-      { id: decoded.id, email: decoded.email, full_name: decoded.full_name },
-      process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: "1h" }
-    );
+  jwt.verify(
+    oldRefreshToken,
+    process.env.REFRESH_TOKEN_SECRET,
+    (err, decoded) => {
+      if (err) {
+        console.log("REFRESH FAILED: Token verification error");
+        console.error("Error details:", err.message);
+        return res
+          .status(403)
+          .json({ error: "Invalid or expired refresh token" });
+      }
 
-    res.json({ token: newAccessToken });
-  });
+      // Generate NEW access token (70s for testing)
+      const newAccessToken = jwt.sign(
+        { id: decoded.id, email: decoded.email, full_name: decoded.full_name },
+        process.env.ACCESS_TOKEN_SECRET,
+        { expiresIn: "70s" }
+      );
+
+      // TOKEN ROTATION: Generate NEW refresh token with FRESH expiry
+      const newRefreshToken = jwt.sign(
+        { id: decoded.id, email: decoded.email, full_name: decoded.full_name },
+        process.env.REFRESH_TOKEN_SECRET,
+        { expiresIn: "10m" } // Fresh 10 minutes from NOW
+      );
+
+      // Replace old refresh token with new one in cookie
+      res.cookie("refreshToken", newRefreshToken, {
+        httpOnly: true,
+        secure: false, // true in production
+        sameSite: "Strict",
+        maxAge: 10 * 60 * 1000, // 10 minutes
+      });
+
+      res.json({ token: newAccessToken });
+    }
+  );
 });
 
+// LOGOUT: Clear refresh token cookie
 router.post("/logout", (req, res) => {
   res.clearCookie("refreshToken", {
     httpOnly: true,
@@ -260,9 +273,7 @@ router.post("/logout", (req, res) => {
   res.json({ message: "Logged out successfully" });
 });
 
-// ========================
 // Get logged-in admin profile
-// ========================
 router.get("/me", authenticate, async (req, res) => {
   try {
     const result = await pool.query(
@@ -282,9 +293,7 @@ router.get("/me", authenticate, async (req, res) => {
   }
 });
 
-// ========================
 // Update profile (only self)
-// ========================
 router.put("/:id", authenticate, async (req, res) => {
   try {
     const { id } = req.params;
@@ -314,9 +323,7 @@ router.put("/:id", authenticate, async (req, res) => {
   }
 });
 
-// ========================
 // Sign up (new admin request)
-// ========================
 router.post("/", async (req, res) => {
   const { fullName, department, email, notes } = req.body;
   try {
@@ -341,9 +348,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-// ========================
 // Update status (approve/reject) + send email
-// ========================
 router.put("/:id/status", async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
@@ -407,9 +412,7 @@ router.put("/:id/status", async (req, res) => {
   }
 });
 
-// ========================
 // Get total number of admins
-// ========================
 router.get("/count", async (req, res) => {
   try {
     const result = await pool.query("SELECT COUNT(*) AS total FROM admins");
