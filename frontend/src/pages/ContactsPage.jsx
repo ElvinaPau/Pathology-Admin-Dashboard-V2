@@ -137,7 +137,7 @@ function ContactsPage() {
       {!isPreviewMode ? (
         <div className="form-page-wrapper">
           <div className="table-title">
-            <div className="title-display">
+            <div className="home-title">
               <div>Manage Contacts</div>
             </div>
           </div>

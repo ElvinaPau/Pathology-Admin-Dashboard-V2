@@ -1,20 +1,17 @@
 import React from "react";
 import "../css/StatCard.css";
 
-const StatCard = ({ title, count, icon, lastUpdated, onClick }) => {
+const StatCard = ({ title, count, icon, onClick }) => {
   return (
     <div
-      className={`stats-card ${onClick ? "clickable" : ""}`}
+      className={`stat-item ${onClick ? "clickable" : ""}`}
       onClick={onClick}
-      style={{ cursor: onClick ? "pointer" : "default" }}
     >
-      <div className="card-header">
+      <div className="stat-row"> 
         <div className="stat-icon">{icon}</div>
-        <div className="main-number">{count}</div>
+        <h3 className="stat-title">{title}</h3>
       </div>
-
-      <h3 className="card-title">{title}</h3>
-      <p className="card-subtitle">Last updated on {lastUpdated}</p>
+      <div className="stat-count">{count.toLocaleString()}</div>
     </div>
   );
 };

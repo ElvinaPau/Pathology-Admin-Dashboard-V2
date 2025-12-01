@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import "../css/AddTabForm.css";
 import BasicForm from "./BasicForm";
 import LabTestForm from "./LabTestForm";
-import ContainerForm from "./ContainerForm";
 import HomePageHeader from "../assets/HomePageHeader";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { useParams, useNavigate } from "react-router-dom";
@@ -27,8 +26,6 @@ function getFormComponent(type) {
       return BasicForm;
     case "Lab Test":
       return LabTestForm;
-    case "Container":
-      return ContainerForm;
     default:
       return BasicForm;
   }
@@ -267,7 +264,8 @@ function AddTabForm() {
             <div className="prev-page-title">{formData.name}</div>
           </div>
 
-          <div className="test-info-details">
+          {/* Card-based preview */}
+          <div className="preview-cards-container">
             {formData.infos.map((info, index) => {
               const d = info.fields || {};
               const imageSrc =
@@ -278,19 +276,19 @@ function AddTabForm() {
                   : null;
 
               return (
-                <div key={index} className="extra-data">
-                  {d.title && <h2>{d.title}</h2>}
+                <div key={index} className="preview-info-card">
+                  {d.title && <h2 className="preview-card-title">{d.title}</h2>}
 
                   {d.labInCharge && (
-                    <p>
+                    <div className="preview-card-section">
                       <strong>Lab In-Charge:</strong>
                       <br />
                       {d.labInCharge}
-                    </p>
+                    </div>
                   )}
 
                   {(d.specimenType || d.otherSpecimen) && (
-                    <p>
+                    <div className="preview-card-section">
                       <strong>Specimen Type:</strong>
                       <br />
                       {[
@@ -312,11 +310,11 @@ function AddTabForm() {
                             <br />
                           </React.Fragment>
                         ))}
-                    </p>
+                    </div>
                   )}
 
                   {d.form && (d.form.text || d.form.url) && (
-                    <p>
+                    <div className="preview-card-section">
                       <strong>Form:</strong>
                       <br />
                       {d.form.url ? (
@@ -334,11 +332,11 @@ function AddTabForm() {
                       ) : (
                         d.form.text
                       )}
-                    </p>
+                    </div>
                   )}
 
                   {d.TAT && (
-                    <p>
+                    <div className="preview-card-section">
                       <strong>TAT:</strong>
                       <br />
                       <span
@@ -346,38 +344,29 @@ function AddTabForm() {
                           __html: d.TAT.replace(/\n/g, "<br />"),
                         }}
                       />
-                    </p>
+                    </div>
                   )}
 
                   {imageSrc && (
-                    <div
-                      className="image-section"
-                      style={{ marginBottom: "0px" }}
-                    >
-                      <p style={{ marginBottom: "2px", lineHeight: "1" }}>
-                        <strong>Container:</strong>
-                      </p>
+                    <div className="preview-card-section">
+                      <strong>Container:</strong>
+                      <br />
                       <img
                         src={imageSrc}
                         alt={d.containerLabel || "Container"}
-                        style={{
-                          maxWidth: "250px",
-                          display: "block",
-                          marginBottom: "0px",
-                          marginTop: "0px",
-                        }}
+                        className="preview-card-image"
                       />
                     </div>
                   )}
 
                   {d.containerLabel && (
-                    <p style={{ marginTop: "2px", lineHeight: "1" }}>
+                    <div className="preview-card-section">
                       {d.containerLabel}
-                    </p>
+                    </div>
                   )}
 
                   {d.sampleVolume && (
-                    <p>
+                    <div className="preview-card-section">
                       <strong>Sample Volume:</strong>
                       <br />
                       <span
@@ -385,25 +374,20 @@ function AddTabForm() {
                           __html: d.sampleVolume.replace(/\n/g, "<br />"),
                         }}
                       />
-                    </p>
+                    </div>
                   )}
 
                   {d.description && (
                     <div
-                      className="rich-text-content"
+                      className="preview-card-section rich-text-content"
                       dangerouslySetInnerHTML={{ __html: d.description }}
                     />
                   )}
 
                   {d.remark && (
-                    <div>
-                      <p style={{ marginTop: "5px", marginBottom: "0" }}>
-                        <strong>Remark:</strong>
-                      </p>
-                      <div
-                        dangerouslySetInnerHTML={{ __html: d.remark }}
-                        style={{ margin: 0, lineHeight: 0 }}
-                      />
+                    <div className="preview-card-section">
+                      <strong>Remark:</strong>
+                      <div dangerouslySetInnerHTML={{ __html: d.remark }} />
                     </div>
                   )}
                 </div>
@@ -411,40 +395,39 @@ function AddTabForm() {
             })}
           </div>
 
-          <div className="preview-edit-btn-wrapper">
-            <button
-              className="edit-btn"
-              onClick={() => setIsPreviewMode(false)}
-            >
-              Edit Test
-            </button>
-            <button
-              className="back-btn"
-              onClick={() => navigate(`/categories/${id}`)}
-            >
-              Done
-            </button>
-          </div>
+          <button
+            className="add-form-btn"
+            onClick={() => setIsPreviewMode(false)}
+          >
+            Edit Info
+          </button>
+          <button
+            className="save-all-btn"
+            onClick={() => navigate(`/categories/${id}`)}
+          >
+            Done
+          </button>
         </div>
       </div>
     );
   }
 
-  // ---- Normal edit mode ----
+  // Normal edit mode
   return (
     <div className={`home-page-content ${isNavExpanded ? "Nav-Expanded" : ""}`}>
+      <HomePageHeader />
       <div className="form-page-wrapper">
-        <HomePageHeader />
         <button
           className="back-btn"
           onClick={() => navigate(`/categories/${id}`)}
         >
-          ← Back
+          Back
         </button>
-
         <div className="table-title">
           <div className="title-display">
-            <div>{testId ? "Edit Test / Tab" : "Add New Test / Tab"}</div>
+            <div className="home-title">
+              {testId ? "Edit Test / Tab" : "Add New Test / Tab"}
+            </div>
           </div>
         </div>
 
@@ -493,15 +476,13 @@ function AddTabForm() {
                 <option value="">Select</option>
                 <option value="Basic">Basic</option>
                 <option value="Lab Test">Lab Test</option>
-                <option value="Container">Container</option>
               </select>
             </div>
           </div>
         </div>
 
         {(formData.infoType === "Basic" ||
-          formData.infoType === "Lab Test" ||
-          formData.infoType === "Container") && (
+          formData.infoType === "Lab Test") && (
           <div className="basic-form-section">
             <DragDropContext onDragEnd={handleDragEnd}>
               <Droppable droppableId="infos">
@@ -511,8 +492,6 @@ function AddTabForm() {
                       const FormComponent =
                         index === 0
                           ? getFormComponent(group.type)
-                          : formData.infoType === "Container"
-                          ? getFormComponent("Container")
                           : getFormComponent("Basic");
 
                       if (index === 0) {
@@ -594,7 +573,6 @@ function AddTabForm() {
                 )}
               </Droppable>
             </DragDropContext>
-
             <button
               type="button"
               className="add-form-btn"

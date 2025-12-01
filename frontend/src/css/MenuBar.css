@@ -8,6 +8,11 @@
   flex-wrap: wrap;
 }
 
+.editor-wrapper:focus-within .menu-bar {
+  border-bottom: 1px solid #8b5cf6;
+  background: linear-gradient(135deg, #f6f1fb, #ebe3f740);
+}
+
 .menu-bar button {
   background: none;
   border: none;
@@ -26,6 +31,6 @@
 }
 
 .menu-bar button.active {
-  background: #007bff;
+  background: #8b5cf6;
   color: white;
 }

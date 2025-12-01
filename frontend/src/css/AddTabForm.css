@@ -1,10 +1,17 @@
+.title-display {
+  margin-top: 20px;
+  color: #000;
+  font-size: 25px;
+  font-weight: 600;
+}
+
 .form-page-wrapper {
   width: 70%;
   margin: 40px auto;
   background: #fff;
-  padding: 30px 40px;
+  padding: 20px 30px;
   border-radius: 16px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .add-form-container {
@@ -15,7 +22,7 @@
   padding: 15px;
   margin: 20px;
   margin-bottom: 20px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 8px rgba(123, 93, 232, 0.08);
 }
 
 .add-form-container h2 {
@@ -28,19 +35,91 @@
   margin-bottom: 15px;
 }
 
-.add-form-group label {
+.form-label {
   font-weight: 600;
   margin-bottom: 5px;
-  color: #333;
 }
 
 .add-form-group input,
+.add-form-group select,
+.add-form-group textarea {
+  margin-top: 5px;
+  width: 100%;
+  padding: 10px 40px 10px 12px;
+  box-sizing: border-box;
+  border: 1px solid #ddd;
+  font-size: 1rem;
+  border-radius: 8px;
+  background: #fff;
+  transition: 0.2s ease;
+}
+
 .add-form-group select {
-  padding: 8px 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 14px;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 40px;
+}
+
+.add-form-group input:focus,
+.add-form-group select:focus,
+.add-form-group textarea:focus {
   outline: none;
+  border-color: #8b5cf6;
+}
+.react-select__control {
+  margin-top: 5px;
+  border: 1px solid #ddd !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+  min-height: 40px;
+}
+
+/* On focus */
+.react-select__control--is-focused {
+  border-color: #8b5cf6 !important;
+}
+
+/* Placeholder */
+.react-select__placeholder {
+  color: #000 !important;
+  font-size: 14px;
+}
+
+/* Multi-value tags */
+.react-select__multi-value {
+  background: linear-gradient(135deg, #f6f1fb, #ebe3f740) !important;
+  border-radius: 8px;
+}
+
+.react-select__multi-value__remove:hover {
+  background-color: #7c3aed !important;
+  color: white !important;
+}
+
+/* Dropdown menu */
+.react-select__menu {
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Options */
+.react-select__option {
+  cursor: pointer;
+}
+
+.react-select__option--is-focused {
+  background: linear-gradient(135deg, #f6f1fb, #ebe3f740) !important;
+}
+
+.react-select__option--is-selected {
+  background-color: #7b5de8 !important;
+  color: white !important;
 }
 
 /* Side-by-side layout */
@@ -115,31 +194,36 @@ button {
 
 /* Add Another Basic Form button */
 .add-form-btn {
-  background: #28a745;
-  color: #fff;
-  margin-top: 10px;
-  margin: 20px;
+  margin-left: 20px;
+  background: white;
+  border: 1px solid #e0d5f0;
+  color: #7c3aed;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s ease;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
 }
 
 .add-form-btn:hover {
-  background: #1e7e34;
+  background-color: #ddd;
+  transform: translateY(-2px);
 }
 
 .draggable-form {
-  padding: 15px;
+  padding: 10px;
   margin: 20px;
   margin-bottom: 16px;
-  border: 1px dashed #ccc;
+  border: 2px dashed #ccc;
   border-radius: 8px;
   background: #fafafa;
   transition: background 0.2s ease;
 }
 
 .draggable-form:active {
-  background: #e3f2fd;
+  background: linear-gradient(135deg, #f6f1fb, #ebe3f740);
 }
 
-.readonly-input {
+.add-form-group input.readonly-input {
   background-color: #f5f5f5;
   color: #777;
   border: 1px solid #ccc;
@@ -154,7 +238,7 @@ button {
 /* Smooth highlight when a new form is added */
 @keyframes highlight {
   0% {
-    background-color: #fff8c4; /* soft yellow */
+    background-color: #f6f1fb;
   }
   100% {
     background-color: white;
@@ -163,7 +247,7 @@ button {
 
 .draggable-form.newly-added {
   animation: highlight 1.2s ease-out;
-  border: 2px solid #f5d14e; /* optional border flash */
+  border: 2px solid #8b5cf6;
   border-radius: 10px;
 }
 
@@ -176,11 +260,69 @@ button {
 }
 
 .save-all-btn {
-  background-color: #2b7a78;
+  margin-left: 20px;
+  background: #8b5cf6;
   color: white;
-  transition: background-color 0.2s;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
 }
 
 .save-all-btn:hover {
-  background-color: #205b5a;
+  background-color: #7c3aed;
+  transform: translateY(-2px);
+}
+
+/* Preview Card Styles */
+.preview-cards-container {
+  padding: 16px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.preview-info-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+}
+
+.preview-card-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 12px;
+  margin-top: 0;
+}
+
+.preview-card-section {
+  margin-bottom: 12px;
+  line-height: 1.6;
+}
+
+.preview-card-section:last-child {
+  margin-bottom: 0;
+}
+
+.preview-card-section strong {
+  font-weight: 600;
+}
+
+.preview-card-image {
+  max-width: 250px;
+  display: block;
+  margin-top: 8px;
+  border-radius: 8px;
+}
+
+.preview-card-section a {
+  color: #007bff;
+  text-decoration: underline;
+}
+
+.preview-card-section a:hover {
+  color: #0056b3;
 }

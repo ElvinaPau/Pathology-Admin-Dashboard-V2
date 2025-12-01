@@ -1,14 +1,24 @@
 import React, { useState, useRef, useEffect } from "react";
-import "../css/CatCard.css";
 import { IoMdMore } from "react-icons/io";
+import { MdDelete, MdAddCircleOutline } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
+import "../css/CatCard.css";
 
-function CatCard({ id, title, count, icon, onClick, onDelete }) {
+function CatCard({
+  id,
+  title,
+  count,
+  icon,
+  onClick,
+  onDelete,
+  lastUpdated,
+  className = "",
+}) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
-  // Close dropdown if clicked outside
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -20,12 +30,29 @@ function CatCard({ id, title, count, icon, onClick, onDelete }) {
   }, []);
 
   return (
-    <div className="cat-card" onClick={onClick} style={{ cursor: "pointer" }}>
-      <div>
-        <div className="icon">{icon}</div>
+    <div
+      className={`cat-card ${isHovered ? "hovered" : ""} ${className}`}
+      onClick={onClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {/* Animated background gradient */}
+      <div className="cat-card-bg"></div>
+
+      {/* Shine effect on hover */}
+      <div className="cat-card-shine"></div>
+
+      <div className="cat-card-content">
+        <div className="icon-wrapper">
+          <div className="icon">{icon}</div>
+        </div>
+
         <div className="details">
-          <p>{title}</p>
-          <h3>{count}</h3>
+          <p className="category-title">{title}</p>
+          <h3 className="category-count">{count}</h3>
+          {lastUpdated && (
+            <span className="last-updated">Last updated: {lastUpdated}</span>
+          )}
         </div>
       </div>
 
@@ -36,29 +63,31 @@ function CatCard({ id, title, count, icon, onClick, onDelete }) {
       >
         <IoMdMore
           onClick={() => setDropdownOpen(!dropdownOpen)}
-          style={{ cursor: "pointer" }}
+          className="more-btn"
         />
 
         {dropdownOpen && (
           <div className="dropdown-menu">
             <div
-              className="dropdown-item"
+              className="dropdown-item add-item"
               onClick={() => {
                 setDropdownOpen(false);
                 navigate(`/categories/${id}/add`);
               }}
             >
-              Add New Test/Tab
+              <MdAddCircleOutline className="dropdown-icon" />
+              <span>Add New Test</span>
             </div>
 
             <div
-              className="dropdown-item"
+              className="dropdown-item delete-item"
               onClick={() => {
                 setDropdownOpen(false);
                 onDelete?.();
               }}
             >
-              Delete
+              <MdDelete className="dropdown-icon" />
+              <span>Delete</span>
             </div>
           </div>
         )}

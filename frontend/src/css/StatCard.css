@@ -1,50 +1,85 @@
-.stats-card {
-  height: 120px;
-  margin-top: 10px;
-  margin-bottom: 10px;
+.stats-container {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.stat-item {
   margin-left: 15px;
-  background: white;
-  border-radius: 16px;
-  padding: 24px;
-  /* box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); */
-  max-width: 320px;
-  width: 25%;
+  margin-right: 15px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
   position: relative;
 }
 
-.card-header {
+.stat-item:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  right: -40px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 100px;
+  width: 1px;
+  background-color: #e5e7eb;
+}
+
+.stat-item.clickable {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.stat-item.clickable:hover {
+  transform: translateY(-6px);
+}
+
+.stat-row {
   display: flex;
   align-items: center;
-  margin-bottom: 24px;
-  position: relative;
-  min-height: 48px;
+  gap: 20px;
 }
 
 .stat-icon {
-  font-size: 40px;
   color: #8b5cf6;
-}
-
-.main-number {
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 40px;
-  font-weight: 700;
-  color: #1f2937;
-  line-height: 1;
-}
-
-.card-title {
-  font-size: 20px;
-  font-weight: 600;
-  color: #1f2937;
-  margin-top: 0%;
+  font-size: 35px;
   margin-bottom: 12px;
 }
 
-.card-subtitle {
-  font-size: 14px;
-  color: #6b7280;
+.stat-title {
+  margin-top: 0%;
+  color: #000;
+  font-size: 25px;
+  font-weight: 600;
+}
+
+.stat-count {
+  font-size: 40px;
+  font-weight: bold;
+  color: #000;
+  line-height: 1;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .stats-container {
+    flex-direction: column;
+    gap: 0px;
+    padding: 5px 20px;
+  }
+
+  .stat-item:not(:last-child)::after {
+    display: none;
+  }
+  .stat-title {
+    font-size: 16px;
+  }
+
+  .stat-count {
+    font-size: 30px;
+  }
 }

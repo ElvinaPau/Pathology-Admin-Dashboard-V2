@@ -79,14 +79,14 @@ const AdminTable = () => {
 
   return (
     <>
-      <h2 style={{ marginLeft: "20px" }}>Admin Request(s)</h2>
+      <h2 className="home-title">Admin Request(s)</h2>
       {/* Summary Cards */}
       <div className="admin-summary-container">
         <div className="admin-summary-row">
           {/* Card 1 */}
           <div className="admin-summary-card">
-            <h3>Total Admin</h3>
-            <p className="count">{getCount("all")}</p>
+            <p className="admin-summary-title">Total Admin</p>
+            <p className="admin-summary-count">{getCount("all")}</p>
             <small>
               Last updated:{" "}
               {lastUpdated ? lastUpdated.toLocaleString() : "Fetching..."}
@@ -97,8 +97,8 @@ const AdminTable = () => {
 
           {/* Card 2 */}
           <div className="admin-summary-card">
-            <h3>Total Approved</h3>
-            <p className="count">{getCount("approved")}</p>
+            <p className="admin-summary-title">Total Approved</p>
+            <p className="admin-summary-count">{getCount("approved")}</p>
             <small>
               Last updated:{" "}
               {lastUpdated ? lastUpdated.toLocaleString() : "Fetching..."}
@@ -109,8 +109,8 @@ const AdminTable = () => {
 
           {/* Card 3 */}
           <div className="admin-summary-card">
-            <h3>Total Rejected</h3>
-            <p className="count">{getCount("rejected")}</p>
+            <p className="admin-summary-title">Total Rejected</p>
+            <p className="admin-summary-count">{getCount("rejected")}</p>
             <small>
               Last updated:{" "}
               {lastUpdated ? lastUpdated.toLocaleString() : "Fetching..."}
@@ -149,9 +149,9 @@ const AdminTable = () => {
               <col style={{ width: "2%" }} /> {/* No */}
               <col style={{ width: "15%" }} /> {/* Name */}
               <col style={{ width: "10%" }} /> {/* Department */}
-              <col style={{ width: "20%" }} /> {/* Email Address */}
+              <col style={{ width: "15%" }} /> {/* Email Address */}
               <col style={{ width: "20%" }} /> {/* Notes */}
-              <col style={{ width: "13%" }} /> {/* Time */}
+              <col style={{ width: "16%" }} /> {/* Time */}
               <col style={{ width: "13%" }} /> {/* Status */}
             </colgroup>
 

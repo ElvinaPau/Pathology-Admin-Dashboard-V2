@@ -3,16 +3,21 @@ import {
   AiFillHome,
   AiOutlineMobile,
   AiFillMobile,
-  AiOutlinePhone,
-  AiFillPhone,
 } from "react-icons/ai";
+import { MdOutlineFeedback, MdFeedback } from "react-icons/md";
 import { PiUsersThree, PiUsersThreeFill } from "react-icons/pi";
 import { FaSignOutAlt } from "react-icons/fa";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import "../css/SideNav.css";
 
 function SideNav({ isExpanded }) {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Check if current path is preview-related
+  const isPreviewActive =
+    location.pathname === "/preview" ||
+    location.pathname.startsWith("/prevtests");
 
   const handleLogout = () => {
     const confirmLogout = window.confirm("Are you sure you want to log out?");
@@ -52,7 +57,7 @@ function SideNav({ isExpanded }) {
           </li>
 
           {/* Admin Requests */}
-          <li data-label="Admin Requests">
+          <li data-label="Admin">
             <NavLink
               to="/admin-requests"
               className={({ isActive }) => (isActive ? "active" : "")}
@@ -64,9 +69,7 @@ function SideNav({ isExpanded }) {
                   ) : (
                     <PiUsersThree className="nav-icon" />
                   )}
-                  {isExpanded && (
-                    <span className="nav-text">Admin Requests</span>
-                  )}
+                  {isExpanded && <span className="nav-text">Admin</span>}
                 </>
               )}
             </NavLink>
@@ -74,20 +77,15 @@ function SideNav({ isExpanded }) {
 
           {/* Preview */}
           <li data-label="Preview">
-            <NavLink
-              to="/preview"
-              className={({ isActive }) => (isActive ? "active" : "")}
-            >
-              {({ isActive }) => (
-                <>
-                  {isActive ? (
-                    <AiFillMobile className="nav-icon" />
-                  ) : (
-                    <AiOutlineMobile className="nav-icon" />
-                  )}
-                  {isExpanded && <span className="nav-text">Preview</span>}
-                </>
-              )}
+            <NavLink to="/preview" className={isPreviewActive ? "active" : ""}>
+              <>
+                {isPreviewActive ? (
+                  <AiFillMobile className="nav-icon" />
+                ) : (
+                  <AiOutlineMobile className="nav-icon" />
+                )}
+                {isExpanded && <span className="nav-text">Preview</span>}
+              </>
             </NavLink>
           </li>
 
@@ -102,9 +100,9 @@ function SideNav({ isExpanded }) {
               {({ isActive }) => (
                 <>
                   {isActive ? (
-                    <AiFillPhone className="nav-icon" />
+                    <MdFeedback className="nav-icon" />
                   ) : (
-                    <AiOutlinePhone className="nav-icon" />
+                    <MdOutlineFeedback className="nav-icon" />
                   )}
                   {isExpanded && <span className="nav-text">Contacts</span>}
                 </>

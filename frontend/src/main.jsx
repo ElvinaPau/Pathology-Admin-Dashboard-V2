@@ -182,7 +182,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
               path="/prevtests/:id"
               element={
                 <ProtectedRoute>
-                  <PrevTestsPage />
+                  <AdminPreviewPage />
                 </ProtectedRoute>
               }
             />
@@ -191,7 +191,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
               path="/testinfos/:id"
               element={
                 <ProtectedRoute>
-                  <PrevTestInfoPage />
+                  <AdminPreviewPage />
                 </ProtectedRoute>
               }
             />

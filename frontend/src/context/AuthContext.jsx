@@ -39,11 +39,11 @@ export function AuthProvider({ children }) {
   const showSessionExpiringRef = useRef(false);
   const showSessionExpiredRef = useRef(false);
 
-  const IDLE_TIMEOUT = 2 * 60 * 1000; // 2 minutes (for testing)
-  const MAX_SESSION_DURATION = 5 * 60 * 1000; // 5 minutes (for testing)
+  const IDLE_TIMEOUT = 1 * 60 * 60 * 1000; // 2 minutes (for testing)
+  const MAX_SESSION_DURATION = 8 * 60 * 60 * 1000; // 5 minutes (for testing)
   const WARNING_BEFORE_EXPIRY = 60 * 1000; // 1 min warning before idle timeout
-  const ACCESS_TOKEN_DURATION = 70 * 1000; // 70 seconds
-  const TOKEN_REFRESH_BUFFER = 10 * 1000; // Refresh 10s before expiry
+  const ACCESS_TOKEN_DURATION = 15 * 60 * 1000; // 70 seconds
+  const TOKEN_REFRESH_BUFFER = 1 * 60 * 1000; // Refresh 10s before expiry
   const ACTIVITY_EVENTS = ["keypress", "touchstart", "click", "mousemove"];
 
   axios.defaults.withCredentials = true;

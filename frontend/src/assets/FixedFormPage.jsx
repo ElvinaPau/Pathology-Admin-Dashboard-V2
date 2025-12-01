@@ -21,7 +21,7 @@ function FixedFormPage() {
         ← Back
       </button>
 
-      <div className="table-title">
+      <div className="home-title">
         <div className="title-display">
           <div>{category.name}</div>
         </div>

@@ -25,6 +25,7 @@ function AdminHomePage() {
     lastUpdated: "N/A",
   });
   const [forms, setForms] = useState([]);
+  const [highlightId, setHighlightId] = useState(null);
 
   useEffect(() => {
     const fetchForms = async () => {
@@ -119,10 +120,11 @@ function AdminHomePage() {
 
   // Add new category
   const handleSubmit = async () => {
-    if (!newCategoryName.trim()) return;
+    const trimmedName = newCategoryName.trim();
+    if (!trimmedName) return;
 
     const exists = categories.some(
-      (cat) => cat.name.toLowerCase() === newCategoryName.trim().toLowerCase()
+      (cat) => cat.name.toLowerCase() === trimmedName.toLowerCase()
     );
     if (exists) {
       alert("This category already exists!");
@@ -131,7 +133,7 @@ function AdminHomePage() {
 
     try {
       await axios.post("http://localhost:5001/api/categories", {
-        name: newCategoryName,
+        name: trimmedName,
       });
 
       // Re-fetch updated list
@@ -155,8 +157,17 @@ function AdminHomePage() {
       }
 
       setCategories(sorted);
+
+      // Highlight the newly added category
+      const newCatId = sorted.find((cat) => cat.name === trimmedName)?.id;
+      setHighlightId(newCatId);
+
+      // Clear input and hide form after setting highlight
       setNewCategoryName("");
       setShowInput(false);
+
+      // Remove highlight after animation
+      setTimeout(() => setHighlightId(null), 1200);
     } catch (err) {
       console.error("Error adding category:", err.message);
     }
@@ -210,20 +221,22 @@ function AdminHomePage() {
       {/* Overview */}
       <div className="home-title">Overview</div>
       <div className="overview-section">
-        <StatCard
-          title="Total Tests"
-          count={testStats.totalTests}
-          icon={<GrDocumentTest />}
-          lastUpdated={testStats.lastUpdated}
-        />
-        <StatCard
-          title="Total Admin"
-          count={adminCount}
-          icon={<FaUsers />}
-          lastUpdated={new Date().toLocaleDateString()}
-          onClick={() => navigate("/admin-requests")}
-        />
-        <ProfileCard />
+        <div className="profile-container">
+          <ProfileCard />
+        </div>
+        <div className="stats-container">
+          <StatCard
+            title="Total Tests"
+            count={testStats.totalTests}
+            icon={<GrDocumentTest />}
+          />
+          <StatCard
+            title="Total Admin"
+            count={adminCount}
+            icon={<FaUsers />}
+            onClick={() => navigate("/admin-requests")}
+          />
+        </div>
       </div>
 
       {/* Categories */}
@@ -283,6 +296,7 @@ function AdminHomePage() {
                           onDelete={() =>
                             handleDeleteCategory(cat.id, cat.name)
                           }
+                          className={cat.id === highlightId ? "highlight" : ""}
                         />
                       </div>
                     )}
@@ -304,8 +318,11 @@ function AdminHomePage() {
                 />
               )}
 
-              <div className="cat-card add-category">
-                <h4>Add New Category</h4>
+              <div
+                className="cat-card add-category"
+                onClick={() => setShowInput(true)}
+              >
+                <p>Add New Category</p>
                 <button
                   className="create-btn"
                   onClick={() => setShowInput(true)}

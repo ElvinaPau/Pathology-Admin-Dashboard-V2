@@ -75,12 +75,12 @@ function CategoryDetails() {
       <HomePageHeader />
 
       <button className="back-btn" onClick={() => navigate("/home")}>
-        ← Back
+        Back
       </button>
 
       <div className="table-title">
         {isEditing ? (
-          <div className="edit-title" ref={inputRef}>
+          <div className="title-edit" ref={inputRef}>
             <input
               type="text"
               value={editedName}
@@ -93,8 +93,10 @@ function CategoryDetails() {
             />
           </div>
         ) : (
-          <div className="title-display">
-            <div onClick={handleEditClick}>{category.name}</div>
+          <div className="cat-title-display">
+            <div className="home-title" onClick={handleEditClick}>
+              {category.name}
+            </div>
             <AiOutlineEdit className="edit-icon" onClick={handleEditClick} />
           </div>
         )}

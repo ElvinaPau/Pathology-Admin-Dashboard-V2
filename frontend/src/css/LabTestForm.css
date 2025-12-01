@@ -13,15 +13,6 @@
   background: none;
 }
 
-.add-form-container {
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-}
-
 /* Form groups */
 .add-form-group {
   display: flex;
@@ -32,16 +23,6 @@
 .add-form-group label {
   font-weight: 600;
   margin-bottom: 5px;
-}
-
-.add-form-group input,
-.add-form-group select,
-.add-form-group textarea {
-  padding: 8px 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 14px;
-  outline: none;
 }
 
 .add-form-group textarea {

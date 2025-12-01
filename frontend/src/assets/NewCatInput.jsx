@@ -13,14 +13,25 @@ function NewCatInput({
 
   useEffect(() => {
     if (inputRef.current) {
-      inputRef.current.focus(); // Automatically focus the input
+      inputRef.current.focus();
     }
   }, []);
 
   return (
-    <div className="input-overlay">
-      <div className="input-card">
+    <div
+      className="input-overlay"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onCancel();
+        }
+      }}
+    >
+      <div
+        className="input-card"
+        onClick={(e) => e.stopPropagation()}
+      >
         <h3>{title}</h3>
+        <span>Category Name:</span>
         <input
           ref={inputRef}
           className="input-text"
@@ -28,15 +39,13 @@ function NewCatInput({
           value={value}
           onChange={onChange}
           onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              onSubmit();
-            }
+            if (e.key === "Enter") onSubmit();
           }}
           placeholder={placeholder}
         />
         <div className="input-card-buttons">
-          <button onClick={onCancel}>Cancel</button>
           <button onClick={onSubmit}>Add</button>
+          <button onClick={onCancel}>Cancel</button>
         </div>
       </div>
     </div>

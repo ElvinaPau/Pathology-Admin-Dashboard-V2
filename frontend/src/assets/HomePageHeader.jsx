@@ -31,9 +31,7 @@ function HomePageHeader() {
           />
         </div>
 
-        <h3 className="username">
-          {admin ? admin.full_name : "Loading..."}
-        </h3>
+        <h3 className="username">{admin ? admin.full_name : "Loading..."}</h3>
       </div>
       <SideNav isExpanded={isNavExpanded} />
     </>

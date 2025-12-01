@@ -13,7 +13,7 @@
 }
 
 .sidenav.collapsed {
-  width: 80px;
+  width: 75px;
 }
 
 .sidenav.expanded {
@@ -29,7 +29,7 @@
 .sidenav li {
   display: flex;
   align-items: center;
-  padding: 12px 16px;
+  padding: 12px 12px;
   cursor: pointer;
   white-space: nowrap;
   position: relative;
@@ -46,41 +46,42 @@
 
 /* Default hover effect */
 .sidenav a:hover {
-  background: rgba(43, 124, 255, 0.08);
+  background: linear-gradient(135deg, #f6f1fb, #ebe3f740);
   border-radius: 8px;
 }
 
 /* Active link like iOS tabs */
 .sidenav a.active {
-  background: rgba(43, 124, 255, 0.1);
+  background: linear-gradient(135deg, #f6f1fb, #ebe3f7);
   border-radius: 8px;
 }
 
 .sidenav a.active .nav-icon {
   height: 45px;
   margin-left: 15px;
-  font-size: 20px;
+  font-size: 15px;
   margin-right: 16px;
   min-width: 24px;
   transition: all 0.25s ease;
-  color: #2b7cff;
+  color: #8b5cf6;
   transform: scale(1.2);
 }
 
 .sidenav a.active .nav-text {
   font-weight: 600;
-  color: #2b7cff;
+  color: #8b5cf6;
 }
 
-/* Optional left indicator bar */
+/* left indicator bar */
 .sidenav a.active::before {
   content: "";
   position: absolute;
   left: 0;
-  top: 0;
+  top: 5;
   bottom: 0;
   width: 4px;
-  background: #2b7cff;
+  height: 60px;
+  background: #8b5cf6;
   border-radius: 0 4px 4px 0;
 }
 
@@ -107,21 +108,17 @@
 }
 
 /* Tooltip when collapsed */
-.sidenav.collapsed li:hover::after {
+.sidenav.collapsed li::after {
   content: attr(data-label);
   position: absolute;
-  left: 100%;
-  top: 50%;
-  transform: translateY(-50%);
-  background-color: #2b7cff;
-  color: #fff;
-  padding: 6px 10px;
+  top: 92%;
+  margin-left: 5px;
+  text-align: center;
+  width: 44px;
+  transform: translateY(-40%);
+  color: #000;
   border-radius: 4px;
-  white-space: nowrap;
   font-size: 14px;
-  z-index: 100;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  margin-left: 10px;
 }
 
 /* Layout */
@@ -146,10 +143,76 @@
 }
 
 .logout-btn:hover {
-  background: rgba(43, 124, 255, 0.08);
+  background: linear-gradient(135deg, #f6f1fb, #ebe3f740);
   border-radius: 8px;
 }
 
 hr {
   width: 80%;
+}
+
+@media (max-width: 1024px) {
+  .sidenav.expanded {
+    width: 205px;
+  }
+
+  .sidenav.collapsed {
+    width: 75px;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidenav.expanded {
+    width: 170px;
+  }
+
+  .sidenav.collapsed {
+    width: 70px;
+  }
+
+  /* Tooltip when collapsed */
+  .sidenav.collapsed li::after {
+    content: attr(data-label);
+    position: absolute;
+    top: 92%;
+    margin-left: 0px;
+    text-align: center;
+    width: 50px;
+    transform: translateY(-40%);
+    color: #000;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+
+  .sidenav a.active .nav-icon {
+    height: 45px;
+    margin-left: 12px;
+    font-size: 15px;
+    margin-right: 16px;
+    min-width: 24px;
+    transition: all 0.25s ease;
+    color: #8b5cf6;
+    transform: scale(1.2);
+  }
+
+  .nav-icon {
+    height: 45px;
+    margin-left: 15px;
+    font-size: 20px;
+    margin-right: 16px;
+    min-width: 24px;
+    transition: all 0.25s ease;
+  }
+
+  .logout-icon {
+    height: 30px;
+    margin-right: 16px;
+    min-width: 22px;
+    transition: all 0.25s ease;
+  }
+
+  /* optional: smaller text */
+  .nav-text {
+    font-size: 14px;
+  }
 }

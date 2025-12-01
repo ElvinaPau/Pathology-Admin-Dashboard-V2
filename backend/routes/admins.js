@@ -181,14 +181,14 @@ router.post("/login", async (req, res) => {
     const accessToken = jwt.sign(
       { id: admin.id, email: admin.email, full_name: admin.full_name },
       process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: "70s" }
+      { expiresIn: "15m" }
     );
 
     // ✅ Generate refresh token (10min for testing, 24h in production)
     const refreshToken = jwt.sign(
       { id: admin.id, email: admin.email, full_name: admin.full_name },
       process.env.REFRESH_TOKEN_SECRET,
-      { expiresIn: "10m" } // 10 min > 5 min max session (for testing)
+      { expiresIn: "8h" } // 10 min > 5 min max session (for testing)
     );
 
     // Send refresh token as secure HTTP-only cookie
@@ -196,7 +196,7 @@ router.post("/login", async (req, res) => {
       httpOnly: true,
       secure: false, // set to true in production (HTTPS)
       sameSite: "Strict",
-      maxAge: 10 * 60 * 1000, // 10 minutes
+      maxAge: 8 * 60 * 60 * 1000, // 10 minutes
     });
 
     res.json({
@@ -240,14 +240,14 @@ router.post("/refresh", (req, res) => {
       const newAccessToken = jwt.sign(
         { id: decoded.id, email: decoded.email, full_name: decoded.full_name },
         process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: "70s" }
+        { expiresIn: "15m" }
       );
 
       // TOKEN ROTATION: Generate NEW refresh token with FRESH expiry
       const newRefreshToken = jwt.sign(
         { id: decoded.id, email: decoded.email, full_name: decoded.full_name },
         process.env.REFRESH_TOKEN_SECRET,
-        { expiresIn: "10m" } // Fresh 10 minutes from NOW
+        { expiresIn: "8h" } // Fresh 10 minutes from NOW
       );
 
       // Replace old refresh token with new one in cookie
@@ -255,7 +255,7 @@ router.post("/refresh", (req, res) => {
         httpOnly: true,
         secure: false, // true in production
         sameSite: "Strict",
-        maxAge: 10 * 60 * 1000, // 10 minutes
+        maxAge: 8 * 60 * 60 * 1000, // 10 minutes
       });
 
       res.json({ token: newAccessToken });

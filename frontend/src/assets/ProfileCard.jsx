@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../css/ProfileCard.css";
 import { useAuth } from "../context/AuthContext";
-import { FaUser } from "react-icons/fa";
+import { FaUser, FaEnvelope, FaBuilding, FaEdit } from "react-icons/fa";
 import axios from "axios";
 
 axios.defaults.baseURL = "http://localhost:5001";
@@ -15,7 +15,6 @@ function ProfileCard() {
     email: "",
   });
 
-  // preload when admin info available
   useEffect(() => {
     if (admin) setFormData(admin);
   }, [admin]);
@@ -42,31 +41,94 @@ function ProfileCard() {
 
   return (
     <>
-      {/* Small card (clickable) */}
-      <div className="profile-card" onClick={() => setShowModal(true)}>
-        <h3 className="profile-title">Profile</h3>
-        <div className="profile-content">
-          <div className="profile-avatar">
-            <FaUser />
+      <div className="profile-card">
+        {/* Edit Icon */}
+        <button
+          className="profile-edit-icon"
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowModal(true);
+          }}
+        >
+          <FaEdit />
+        </button>
+
+        <div className="profile-gradient-bg">
+          <div className="profile-content-wrapper">
+            <div className="profile-header-text">
+              <span className="profile-greeting">Good Day,</span>
+              <h2 className="profile-name">{admin.full_name}</h2>
+            </div>
+
+            <div className="profile-stats-grid">
+              <div className="profile-stat-item">
+                <div className="stat-icon-box">
+                  <FaBuilding />
+                </div>
+                <div className="stat-info">
+                  <span className="stat-label">Department</span>
+                  <span className="stat-value">{admin.department}</span>
+                </div>
+              </div>
+
+              <div className="profile-stat-item">
+                <div className="stat-icon-box">
+                  <FaEnvelope />
+                </div>
+                <div className="stat-info">
+                  <span className="stat-label">Email Address</span>
+                  <span className="stat-value">{admin.email}</span>
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="profile-details">
-            <div className="profile-item">
-              <span className="profile-label">Name:</span>
-              <span className="profile-value">{admin.full_name}</span>
-            </div>
-            <div className="profile-item">
-              <span className="profile-label">Department:</span>
-              <span className="profile-value">{admin.department}</span>
-            </div>
-            <div className="profile-item">
-              <span className="profile-label">Email:</span>
-              <span className="profile-value">{admin.email}</span>
+
+          <div className="profile-decoration">
+            <svg
+              className="deco-element"
+              viewBox="0 0 200 200"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle cx="100" cy="100" r="80" fill="rgba(255,255,255,0.1)" />
+              <circle cx="100" cy="100" r="60" fill="rgba(255,255,255,0.08)" />
+              <circle cx="100" cy="100" r="40" fill="rgba(255,255,255,0.06)" />
+            </svg>
+
+            <svg
+              className="deco-lines"
+              viewBox="0 0 200 200"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M20,50 Q100,30 180,50"
+                stroke="rgba(255,255,255,0.2)"
+                strokeWidth="2"
+                fill="none"
+              />
+              <path
+                d="M20,100 Q100,80 180,100"
+                stroke="rgba(255,255,255,0.15)"
+                strokeWidth="2"
+                fill="none"
+              />
+              <path
+                d="M20,150 Q100,130 180,150"
+                stroke="rgba(255,255,255,0.1)"
+                strokeWidth="2"
+                fill="none"
+              />
+            </svg>
+
+            <div className="deco-dots">
+              <span className="dot"></span>
+              <span className="dot"></span>
+              <span className="dot"></span>
+              <span className="dot"></span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Modal (center screen) */}
       {showModal && (
         <div
           className="profile-modal-overlay"
@@ -75,10 +137,9 @@ function ProfileCard() {
           <div className="profile-modal" onClick={(e) => e.stopPropagation()}>
             <h3>Edit Profile</h3>
 
-            {/* Wrap inputs in a form */}
             <form
               onSubmit={(e) => {
-                e.preventDefault(); // prevent page reload
+                e.preventDefault();
                 handleSave();
               }}
             >
@@ -114,7 +175,7 @@ function ProfileCard() {
               </div>
 
               <div className="profile-item">
-                <span className="profile-label">Email:</span>
+                <span className="profile-label">Email Address:</span>
                 <span className="profile-value">{formData.email}</span>
               </div>
 

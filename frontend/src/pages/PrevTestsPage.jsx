@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import HomePageHeader from "../assets/HomePageHeader";
 import { useNavigation } from "../context/NavigationContext";
 import { IoIosArrowBack } from "react-icons/io";
+import { FaSearch, FaBookmark, FaPhone, FaUser } from "react-icons/fa";
 import axios from "axios";
 import "../css/AdminPreviewPage.css";
 
@@ -16,13 +17,13 @@ function PrevTestsPage() {
   const [forms, setForms] = useState([]);
   const [isFormCategory, setIsFormCategory] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [mobileSearchTerm, setMobileSearchTerm] = useState("");
 
   // Fetch category info for title
   useEffect(() => {
     const fetchCategory = async () => {
       try {
         if (id === "fixed-form") {
-          // Special case: FORM card
           setCategoryName("FORM");
           setIsFormCategory(true);
           return;
@@ -70,25 +71,21 @@ function PrevTestsPage() {
     );
   });
 
+  // Filter tests by mobile search term
+  const filteredTests = tests.filter((test) => {
+    const term = mobileSearchTerm.toLowerCase();
+    return test.name?.toLowerCase().includes(term);
+  });
+
   return (
     <div className={`home-page-content ${isNavExpanded ? "Nav-Expanded" : ""}`}>
       <HomePageHeader />
 
       <div className="prev-header">
-        <div className="prev-header-title">
-          <button
-            className="prev-back-btn"
-            onClick={() => navigate("/preview")}
-          >
-            <IoIosArrowBack />
-          </button>
-
-          <div className="prev-page-title">{categoryName}</div>
-        </div>
 
         {isFormCategory ? (
           <div className="form-info-container">
-            <div className="">
+            <div>
               {/* Search bar */}
               <input
                 type="text"
@@ -141,15 +138,57 @@ function PrevTestsPage() {
           </div>
         ) : (
           <div className="prev-categories-list">
-            {tests.map((test) => (
-              <div
-                key={test.id}
-                className="prev-category-card"
-                onClick={() => navigate(`/testinfos/${test.id}`)}
-              >
-                <h4 className="prev-category-title">{test.name}</h4>
+            {/* Mobile App Header */}
+            <div className="mobile-app-header">
+              <div className="mobile-header-content">
+                 <button
+            className="prev-back-btn"
+            onClick={() => navigate("/preview")}
+          >
+            <IoIosArrowBack />
+          </button>
+                <h1 className="mobile-app-title">{categoryName}</h1>
+                <FaUser className="mobile-user-icon" />
               </div>
-            ))}
+            </div>
+
+            {/* Mobile Search Bar */}
+            <input
+              type="text"
+              className="mobile-search-bar"
+              placeholder="Search for categories..."
+              value={mobileSearchTerm}
+              onChange={(e) => setMobileSearchTerm(e.target.value)}
+            />
+
+            {/* Test Cards */}
+            {filteredTests.length > 0 ? (
+              filteredTests.map((test) => (
+                <div
+                  key={test.id}
+                  className="prev-category-card"
+                  onClick={() => navigate(`/testinfos/${test.id}`)}
+                >
+                  <h4 className="prev-category-title">{test.name}</h4>
+                </div>
+              ))
+            ) : (
+              <div
+                className="prev-category-card"
+                style={{ cursor: "default", opacity: 0.6 }}
+              >
+                <h4 className="prev-category-title">No tests found</h4>
+              </div>
+            )}
+
+            {/* Mobile Bottom Navigation */}
+            <div className="mobile-bottom-nav">
+              <FaBookmark className="mobile-nav-icon" />
+              <div className="mobile-fab-button">
+                <FaSearch />
+              </div>
+              <FaPhone className="mobile-nav-icon" />
+            </div>
           </div>
         )}
       </div>

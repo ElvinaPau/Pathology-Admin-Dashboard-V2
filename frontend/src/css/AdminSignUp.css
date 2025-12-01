@@ -43,7 +43,7 @@
   margin-top: 2rem;
   padding: 1.5rem;
   background: #fff;
-  border-radius: 12px;
+  border-radius: 8px;
   border-left: 4px solid #ffa726;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   max-width: 500px;
@@ -95,7 +95,7 @@
   max-width: 420px;
   background-color: #ffffff;
   padding: 3rem;
-  border-radius: 12px;
+  border-radius: 8px;
   box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.08);
   border: 1px solid #e3e8ef;
   animation: fadeIn 0.5s ease;
@@ -139,10 +139,10 @@ textarea {
   width: 100%;
   padding: 10px 12px;
   box-sizing: border-box;
-  border: 1px solid #cbd5e1;
+  border: 1px solid #ddd;
   font-size: 1rem;
   border-radius: 8px;
-  background: #f9fbff;
+  background: #fff;
   transition: 0.2s ease;
   font-family: inherit;
 }
@@ -167,8 +167,7 @@ textarea {
 select:focus,
 textarea:focus {
   outline: none;
-  border-color: #4a90e2;
-  box-shadow: 0 0 6px rgba(74, 144, 226, 0.4);
+  border-color: #8b5cf6;
 }
 
 a {

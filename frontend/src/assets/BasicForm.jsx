@@ -39,7 +39,7 @@ function BasicForm({ fields = {}, setFields, onRemove, isFirst }) {
       </div>
 
       <div className="add-form-group">
-        <label>Title</label>
+        <label className="form-label">Title</label>
         <input
           type="text"
           value={formData.title}
@@ -48,7 +48,7 @@ function BasicForm({ fields = {}, setFields, onRemove, isFirst }) {
       </div>
 
       <div>
-        <label>Description</label>
+        <label className="form-label">Description</label>
         <RichTextEditor
           value={formData.description}
           onChange={(val) => handleChange("description", val)}

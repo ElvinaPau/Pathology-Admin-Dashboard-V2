@@ -63,7 +63,7 @@ const TestTable = () => {
     return matchesTab && matchesSearch;
   });
 
-  // --- Actions ---
+  // Actions
   const handleSoftDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this test?")) return;
     try {
@@ -117,7 +117,7 @@ const TestTable = () => {
           ))}
         </div>
         <button
-          className="add-btn"
+          className="add-button"
           onClick={() => navigate(`/categories/${id}/add`)}
         >
           + Add Test / Tab
@@ -136,7 +136,7 @@ const TestTable = () => {
       <div className="table-scroll">
         <table>
           <colgroup>
-            <col style={{ width: "5%" }} />
+            <col style={{ width: "2%" }} />
             <col style={{ width: "35%" }} />
             <col style={{ width: "30%" }} />
             <col style={{ width: "20%" }} />
@@ -182,7 +182,7 @@ const TestTable = () => {
                         />
                         <MdDeleteOutline
                           className="icon-delete"
-                          title="Soft Delete"
+                          title="Delete"
                           onClick={() => handleSoftDelete(test.id)}
                         />
                       </>
