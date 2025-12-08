@@ -16,7 +16,7 @@ app.use(
       "http://10.167.177.31:5173", // React app via IP
       "http://localhost:*", // Any localhost port
       "http://10.167.177.31:*", // Any port on your IP (for Flutter)
-      "https://htaa-admin-dashboard-4p8m75j5r-elvinas-projects-f76dd006.vercel.app", // deployed frontend
+      "https://htaa-admin-dashboard.vercel.app", // deployed frontend
     ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
