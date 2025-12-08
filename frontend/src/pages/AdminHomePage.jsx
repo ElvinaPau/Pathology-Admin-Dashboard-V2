@@ -15,7 +15,7 @@ import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 function AdminHomePage() {
   const { isNavExpanded } = useNavigation();
   const navigate = useNavigate();
-
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5001";
   const [showInput, setShowInput] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [adminCount, setAdminCount] = useState(0);
@@ -30,7 +30,7 @@ function AdminHomePage() {
   useEffect(() => {
     const fetchForms = async () => {
       try {
-        const res = await axios.get(`http://localhost:5001/api/forms`);
+        const res = await axios.get(`${API_BASE}/api/forms`);
         setForms(res.data);
       } catch (err) {
         console.error("Error fetching forms:", err.message);
@@ -48,7 +48,7 @@ function AdminHomePage() {
     const fetchTestStats = async () => {
       try {
         const res = await axios.get(
-          "http://localhost:5001/api/tests/stats/summary"
+          `${API_BASE}/api/tests/stats/summary`
         );
         setTestStats({
           totalTests: res.data.totalTests,
@@ -67,7 +67,7 @@ function AdminHomePage() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await axios.get("http://localhost:5001/api/categories");
+        const res = await axios.get(`${API_BASE}/api/categories`);
         let sorted = res.data.sort(
           (a, b) => (a.position ?? a.id) - (b.position ?? b.id)
         );
@@ -110,7 +110,7 @@ function AdminHomePage() {
   useEffect(() => {
     const fetchCount = async () => {
       try {
-        const res = await axios.get("http://localhost:5001/api/admins/count");
+        const res = await axios.get(`${API_BASE}/api/admins/count`);
         setAdminCount(res.data.total);
       } catch (err) {
         console.error("Error fetching admin count:", err.message);
@@ -133,12 +133,12 @@ function AdminHomePage() {
     }
 
     try {
-      await axios.post("http://localhost:5001/api/categories", {
+      await axios.post(`${API_BASE}/api/categories`, {
         name: trimmedName,
       });
 
       // Re-fetch updated list
-      const res = await axios.get("http://localhost:5001/api/categories");
+      const res = await axios.get(`${API_BASE}/api/categories`);
       let sorted = res.data.sort(
         (a, b) => (a.position ?? a.id) - (b.position ?? b.id)
       );
@@ -190,7 +190,7 @@ function AdminHomePage() {
       return;
 
     try {
-      await axios.delete(`http://localhost:5001/api/categories/${id}`);
+      await axios.delete(`${API_BASE}/api/categories/${id}`);
       setCategories(categories.filter((cat) => cat.id !== id));
     } catch (err) {
       console.error("Error deleting category:", err.message);
@@ -220,7 +220,7 @@ function AdminHomePage() {
     }));
 
     try {
-      await axios.put("http://localhost:5001/api/categories/reorder", {
+      await axios.put(`${API_BASE}/api/categories/reorder`, {
         updates,
       });
     } catch (err) {

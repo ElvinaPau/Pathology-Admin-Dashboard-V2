@@ -46,14 +46,13 @@ function AddTabForm() {
   });
 
   const [isPreviewMode, setIsPreviewMode] = useState(false);
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5001";
 
   // Fetch category name
   useEffect(() => {
     const fetchCategory = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:5001/api/categories/${id}`
-        );
+        const res = await axios.get(`${API_BASE}/api/categories/${id}`);
         setFormData((prev) => ({ ...prev, category: res.data.name }));
       } catch (err) {
         console.error("Error fetching category:", err);
@@ -69,7 +68,7 @@ function AddTabForm() {
     const fetchTest = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5001/api/tests/${testId}?includeinfos=true`
+          `${API_BASE}/api/tests/${testId}?includeinfos=true`
         );
         const test = res.data;
 
@@ -180,7 +179,7 @@ function AddTabForm() {
             uploadFormData.append("image", group.fields.image);
             try {
               const res = await axios.post(
-                "http://localhost:5001/api/uploads/image",
+                `${API_BASE}/api/uploads/image`,
                 uploadFormData,
                 { headers: { "Content-Type": "multipart/form-data" } }
               );
@@ -238,10 +237,10 @@ function AddTabForm() {
 
       // Save or update test
       if (testId) {
-        await axios.put(`http://localhost:5001/api/tests/${testId}`, payload);
+        await axios.put(`${API_BASE}/api/tests/${testId}`, payload);
         alert("Test updated successfully!");
       } else {
-        await axios.post("http://localhost:5001/api/tests", payload);
+        await axios.post(`${API_BASE}/api/tests`, payload);
         alert("Test created successfully!");
       }
 
@@ -272,7 +271,7 @@ function AddTabForm() {
                 d.image && typeof d.image === "string"
                   ? d.image.startsWith("http")
                     ? d.image
-                    : `http://localhost:5001${d.image}`
+                    : `${API_BASE}${d.image}`
                   : null;
 
               return (

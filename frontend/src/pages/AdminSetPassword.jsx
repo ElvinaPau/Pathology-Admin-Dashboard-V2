@@ -6,9 +6,8 @@ import { AiOutlineEyeInvisible } from "react-icons/ai";
 import { MdOutlineVisibility } from "react-icons/md";
 import axios from "axios";
 
-axios.defaults.baseURL = "http://localhost:5001";
-
 function AdminSetPassword() {
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5001";
   const { token } = useParams();
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
@@ -29,7 +28,7 @@ function AdminSetPassword() {
   // Verify token on mount
   useEffect(() => {
     axios
-      .get(`/api/admins/verify-token/${token}`)
+      .get(`${API_BASE}/api/admins/verify-token/${token}`)
       .then((res) => {
         setIsLoading(false);
       })
@@ -86,7 +85,7 @@ function AdminSetPassword() {
     }
 
     try {
-      await axios.post(`/api/admins/set-password/${token}`, {
+      await axios.post(`${API_BASE}/api/admins/set-password/${token}`, {
         password: formData.password,
       });
       alert("Password set successfully!");

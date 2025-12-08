@@ -20,6 +20,7 @@ const addRefreshSubscriber = (callback) => {
 };
 
 export function AuthProvider({ children }) {
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5001";
   const [admin, setAdmin] = useState(null);
   const [token, setToken] = useState(localStorage.getItem("token") || null);
   const [loading, setLoading] = useState(true);
@@ -195,7 +196,7 @@ export function AuthProvider({ children }) {
 
       try {
         const res = await axios.post(
-          "http://localhost:5001/api/admins/refresh",
+          `${API_BASE}/api/admins/refresh`,
           {},
           { withCredentials: true }
         );
@@ -303,7 +304,7 @@ export function AuthProvider({ children }) {
     try {
       // Manual refresh when user clicks "Stay Logged In"
       const res = await axios.post(
-        "http://localhost:5001/api/admins/refresh",
+        `${API_BASE}/api/admins/refresh`,
         {},
         { withCredentials: true }
       );
@@ -349,7 +350,7 @@ export function AuthProvider({ children }) {
 
     try {
       await axios.post(
-        "http://localhost:5001/api/admins/logout",
+        `${API_BASE}/api/admins/logout`,
         {},
         { withCredentials: true }
       );
@@ -416,12 +417,12 @@ export function AuthProvider({ children }) {
             isRefreshing = true;
 
             console.log(
-              "🔄 Token refresh triggered by failed API request (401/403)"
+              "Token refresh triggered by failed API request (401/403)"
             );
 
             try {
               const res = await axios.post(
-                "http://localhost:5001/api/admins/refresh",
+                `${API_BASE}/api/admins/refresh`,
                 {},
                 { withCredentials: true }
               );
@@ -476,7 +477,7 @@ export function AuthProvider({ children }) {
   const fetchCurrentAdmin = async () => {
     setLoading(true);
     try {
-      const res = await axios.get("http://localhost:5001/api/admins/me");
+      const res = await axios.get(`${API_BASE}/api/admins/me`);
       setAdmin(res.data);
     } catch (err) {
       console.error("Failed to fetch admin:", err);

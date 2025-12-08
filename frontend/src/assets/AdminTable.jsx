@@ -6,12 +6,13 @@ const AdminTable = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("all");
   const [lastUpdated, setLastUpdated] = useState(null);
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5001";
 
   // Fetch admins from backend
   useEffect(() => {
     const fetchAdmins = async () => {
       try {
-        const res = await fetch("http://localhost:5001/api/admins");
+        const res = await fetch(`${API_BASE}/api/admins`);
         const data = await res.json();
         setAdmins(data);
         setLastUpdated(new Date());
@@ -26,7 +27,7 @@ const AdminTable = () => {
   // Update status in backend
   const handleStatusChange = async (id, newStatus) => {
     try {
-      const res = await fetch(`http://localhost:5001/api/admins/${id}/status`, {
+      const res = await fetch(`${API_BASE}/api/admins/${id}/status`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus }),

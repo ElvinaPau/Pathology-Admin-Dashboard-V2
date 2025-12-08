@@ -8,6 +8,7 @@ import axios from "axios";
 import "../css/AdminPreviewPage.css";
 
 function PrevTestsPage() {
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5001";
   const { id } = useParams();
   const { isNavExpanded } = useNavigation();
   const navigate = useNavigate();
@@ -30,7 +31,7 @@ function PrevTestsPage() {
         }
 
         const res = await axios.get(
-          `http://localhost:5001/api/categories/${id}`
+          `${API_BASE}/api/categories/${id}`
         );
         setCategoryName(res.data.name);
       } catch (err) {
@@ -45,13 +46,13 @@ function PrevTestsPage() {
     const fetchTestsOrForms = async () => {
       try {
         if (id === "fixed-form") {
-          const res = await axios.get("http://localhost:5001/api/forms");
+          const res = await axios.get(`${API_BASE}/api/forms`);
           setForms(res.data);
           return;
         }
 
         const res = await axios.get(
-          `http://localhost:5001/api/tests?category_id=${id}`
+          `${API_BASE}/api/tests?category_id=${id}`
         );
         setTests(res.data);
       } catch (err) {

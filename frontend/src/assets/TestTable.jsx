@@ -6,6 +6,7 @@ import { MdDeleteOutline, MdRestore, MdDeleteForever } from "react-icons/md";
 import { useNavigate, useParams } from "react-router-dom";
 
 const TestTable = () => {
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5001";
   const { id } = useParams(); // Category ID
   const navigate = useNavigate();
   const [tests, setTests] = useState([]);
@@ -25,7 +26,7 @@ const TestTable = () => {
   const fetchTests = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:5001/api/tests?category_id=${id}`
+        `${API_BASE}/api/tests?category_id=${id}`
       );
       setTests(res.data);
     } catch (err) {
@@ -67,7 +68,7 @@ const TestTable = () => {
   const handleSoftDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this test?")) return;
     try {
-      await axios.delete(`http://localhost:5001/api/tests/${id}`);
+      await axios.delete(`${API_BASE}/api/tests/${id}`);
       await fetchTests();
     } catch (err) {
       console.error("Error deleting test:", err);
@@ -76,7 +77,7 @@ const TestTable = () => {
 
   const handleRecover = async (id) => {
     try {
-      await axios.put(`http://localhost:5001/api/tests/${id}/recover`);
+      await axios.put(`${API_BASE}/api/tests/${id}/recover`);
       await fetchTests();
     } catch (err) {
       console.error("Error recovering test:", err);
@@ -89,7 +90,7 @@ const TestTable = () => {
     )
       return;
     try {
-      await axios.delete(`http://localhost:5001/api/tests/${id}/permanent`);
+      await axios.delete(`${API_BASE}/api/tests/${id}/permanent`);
       setTests((prev) => prev.filter((t) => t.id !== id));
     } catch (err) {
       console.error("Error permanently deleting test:", err);

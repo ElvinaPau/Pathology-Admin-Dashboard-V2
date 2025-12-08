@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
-import "../css/AdminQuickTable.css"
+import "../css/AdminQuickTable.css";
 
 const AdminQuickTable = () => {
   const [admins, setAdmins] = useState([]);
   const [lastUpdated, setLastUpdated] = useState(null);
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5001";
 
   // Fetch admins from backend
   useEffect(() => {
     const fetchAdmins = async () => {
       try {
-        const res = await fetch("http://localhost:5001/api/admins");
+        const res = await fetch(`${API_BASE}/api/admins`);
         const data = await res.json();
         setAdmins(data);
         setLastUpdated(new Date());
@@ -23,7 +24,7 @@ const AdminQuickTable = () => {
   // Update status in backend
   const handleStatusChange = async (id, newStatus) => {
     try {
-      const res = await fetch(`http://localhost:5001/api/admins/${id}/status`, {
+      const res = await fetch(`${API_BASE}/api/admins/${id}/status`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus }),
@@ -40,7 +41,7 @@ const AdminQuickTable = () => {
       setLastUpdated(new Date());
     } catch (err) {
       console.error(err);
-      alert("❌ Failed to update status. Please try again.");
+      alert("Failed to update status. Please try again.");
     }
   };
 
@@ -94,7 +95,8 @@ const AdminQuickTable = () => {
         </tbody>
       </table>
       <small>
-        Last updated: {lastUpdated ? lastUpdated.toLocaleString() : "Fetching..."}
+        Last updated:{" "}
+        {lastUpdated ? lastUpdated.toLocaleString() : "Fetching..."}
       </small>
     </div>
   );

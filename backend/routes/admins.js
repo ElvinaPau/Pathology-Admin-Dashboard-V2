@@ -184,7 +184,7 @@ router.post("/login", async (req, res) => {
       { expiresIn: "15m" }
     );
 
-    // ✅ Generate refresh token (10min for testing, 24h in production)
+    // Generate refresh token (10min for testing, 24h in production)
     const refreshToken = jwt.sign(
       { id: admin.id, email: admin.email, full_name: admin.full_name },
       process.env.REFRESH_TOKEN_SECRET,

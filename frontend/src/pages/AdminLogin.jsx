@@ -8,6 +8,7 @@ import { MdOutlineVisibility } from "react-icons/md";
 import { useAuth } from "../context/AuthContext";
 
 function AdminLogin() {
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5001";
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -36,7 +37,7 @@ function AdminLogin() {
 
     try {
       const res = await axios.post(
-        "http://localhost:5001/api/admins/login",
+        `${API_BASE}/api/admins/login`,
         formData,
         { withCredentials: true }
       );

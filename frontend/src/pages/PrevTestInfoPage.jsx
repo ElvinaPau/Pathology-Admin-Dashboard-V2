@@ -37,7 +37,7 @@ function PrevTestInfoPage() {
     const fetchTest = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5001/api/tests/${id}?includeinfos=true`
+          `${API_BASE}/api/tests/${id}?includeinfos=true`
         );
         setTest(res.data);
       } catch (err) {

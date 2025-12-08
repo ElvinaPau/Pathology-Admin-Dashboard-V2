@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import HtaaQLogo from "../assets/HtaaQ-logo.png";
 
 function AdminSignUp() {
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5001";
   const [formData, setFormData] = useState({
     fullName: "",
     department: "",
@@ -24,21 +25,21 @@ function AdminSignUp() {
 
     try {
       const checkRes = await fetch(
-        `http://localhost:5001/api/admins/check?email=${formData.email}`
+        `${API_BASE}/api/admins/check?email=${formData.email}`
       );
       const checkData = await checkRes.json();
 
       if (checkData.exists) {
         if (checkData.status === "pending") {
-          alert("⚠️ Your request with this email is already pending approval.");
+          alert("Your request with this email is already pending approval.");
           return;
         } else if (checkData.status === "approved") {
-          alert("✅ This email is already approved. Please log in instead.");
+          alert("This email is already approved. Please log in instead.");
           return;
         }
       }
 
-      const response = await fetch("http://localhost:5001/api/admins", {
+      const response = await fetch(`${API_BASE}/api/admins`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -49,11 +50,11 @@ function AdminSignUp() {
         setShowPopup(true);
       } else {
         const err = await response.json();
-        alert("❌ " + (err.error || "please try again"));
+        alert((err.error || "please try again"));
       }
     } catch (err) {
       console.error("Error submitting form:", err);
-      alert("⚠️ Server error. Please try again later.");
+      alert("Server error. Please try again later.");
     }
   };
 

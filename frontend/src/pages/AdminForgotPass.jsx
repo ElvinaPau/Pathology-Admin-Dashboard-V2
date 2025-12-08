@@ -4,9 +4,8 @@ import { Link } from "react-router-dom";
 import HtaaQLogo from "../assets/HtaaQ-logo.png";
 import axios from "axios";
 
-axios.defaults.baseURL = "http://localhost:5001";
-
 function AdminForgotPassword() {
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5001";
   const [email, setEmail] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -18,7 +17,9 @@ function AdminForgotPassword() {
 
     try {
       // Check if email exists
-      const checkRes = await axios.get(`/api/admins/check?email=${email}`);
+      const checkRes = await axios.get(
+        `${API_BASE}/api/admins/check?email=${email}`
+      );
       if (!checkRes.data.exists) {
         setStatusMessage("This email is not registered.");
         setLoading(false);
@@ -92,7 +93,9 @@ function AdminForgotPassword() {
             <button type="submit" className="forgotpass-btn" disabled={loading}>
               {loading ? "Sending..." : "SEND RESET LINK"}
             </button>
-            <Link className="forgotpass-link" to="/">Back to login</Link>
+            <Link className="forgotpass-link" to="/">
+              Back to login
+            </Link>
           </form>
         </div>
       </div>

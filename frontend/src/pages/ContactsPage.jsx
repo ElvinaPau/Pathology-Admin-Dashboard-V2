@@ -18,12 +18,13 @@ function reorder(list, startIndex, endIndex) {
 }
 
 function ContactsPage() {
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5001";
   const { isNavExpanded } = useNavigation();
 
   const [contacts, setContacts] = useState([]);
   const [isPreviewMode, setIsPreviewMode] = useState(false);
   const lastFormRef = useRef(null);
-  const API_URL = "http://localhost:5001/api/contacts";
+  const API_URL = `${API_BASE}/api/contacts`;
 
   // Fetch contacts
   useEffect(() => {
@@ -230,7 +231,7 @@ function ContactsPage() {
                         src={
                           contact.fields.image.startsWith("http")
                             ? contact.fields.image
-                            : `http://localhost:5001${contact.fields.image}`
+                            : `${API_BASE}${contact.fields.image}`
                         }
                         alt="contact"
                         style={{

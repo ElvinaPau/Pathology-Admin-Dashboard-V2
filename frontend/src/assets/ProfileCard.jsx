@@ -4,8 +4,6 @@ import { useAuth } from "../context/AuthContext";
 import { FaUser, FaEnvelope, FaBuilding, FaEdit } from "react-icons/fa";
 import axios from "axios";
 
-axios.defaults.baseURL = "http://localhost:5001";
-
 function ProfileCard() {
   const { admin, token, updateAdmin } = useAuth();
   const [showModal, setShowModal] = useState(false);
@@ -23,13 +21,12 @@ function ProfileCard() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5001";
   const handleSave = async () => {
     try {
-      await axios.put(
-        `http://localhost:5001/api/admins/${admin.id}`,
-        formData,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await axios.put(`${API_BASE}/api/admins/${admin.id}`, formData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       updateAdmin(formData);
       setShowModal(false);
     } catch (err) {

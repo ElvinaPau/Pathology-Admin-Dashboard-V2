@@ -16,13 +16,14 @@ function CategoryDetails() {
   const [isEditing, setIsEditing] = useState(false);
   const [editedName, setEditedName] = useState("");
   const inputRef = useRef(null);
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5001";
 
   // Fetch single category
   useEffect(() => {
     const fetchCategory = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5001/api/categories/${id}`
+          `${API_BASE}/api/categories/${id}`
         );
         setCategory(res.data);
       } catch (err) {
@@ -41,7 +42,7 @@ function CategoryDetails() {
   const handleSave = async () => {
     try {
       const res = await axios.put(
-        `http://localhost:5001/api/categories/${id}`,
+        `${API_BASE}/api/categories/${id}`,
         { name: editedName }
       );
       setCategory(res.data);

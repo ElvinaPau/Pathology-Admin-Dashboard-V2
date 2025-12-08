@@ -12,6 +12,7 @@ import axios from "axios";
 import "../css/RichTextEditor.css";
 
 function RichTextEditor({ value = "", onChange }) {
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5001";
   const [linkPosition, setLinkPosition] = useState({ left: 0, top: 0 });
   const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
   const [defaultLinkText, setDefaultLinkText] = useState("");
@@ -83,7 +84,7 @@ function RichTextEditor({ value = "", onChange }) {
       formData.append("image", file);
 
       axios
-        .post("http://localhost:5001/api/uploads/image", formData, {
+        .post(`${API_BASE}/api/uploads/image`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
         })
         .then((res) => {

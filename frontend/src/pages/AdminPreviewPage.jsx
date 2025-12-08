@@ -217,7 +217,7 @@ function PreviewPage() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await axios.get("http://localhost:5001/api/categories");
+        const res = await axios.get(`${API_BASE}/api/categories`);
         const sorted = res.data.sort(
           (a, b) => (a.position ?? a.id) - (b.position ?? b.id)
         );
@@ -233,7 +233,7 @@ function PreviewPage() {
   useEffect(() => {
     const fetchForms = async () => {
       try {
-        const res = await axios.get("http://localhost:5001/api/forms");
+        const res = await axios.get(`${API_BASE}/api/forms`);
         setForms(res.data);
       } catch (err) {
         console.error("Error fetching forms:", err.message);
@@ -263,7 +263,7 @@ function PreviewPage() {
 
     try {
       const res = await axios.get(
-        `http://localhost:5001/api/tests?category_id=${category.id}`
+        `${API_BASE}/api/tests?category_id=${category.id}`
       );
       setTests(res.data);
     } catch (err) {
@@ -282,7 +282,7 @@ function PreviewPage() {
     setMobileSearchTerm(""); // Clear search when opening test
     try {
       const res = await axios.get(
-        `http://localhost:5001/api/tests/${test.id}?includeinfos=true`
+        `${API_BASE}/api/tests/${test.id}?includeinfos=true`
       );
       setSelectedTest(res.data);
       setView("info");
