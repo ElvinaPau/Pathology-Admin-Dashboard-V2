@@ -329,7 +329,7 @@ function AdminHomePage() {
 
               {/* Add New Category */}
               {showInput && (
-                <div style={{ display: "inline-block" }}>
+                <div>
                   <NewCatInput
                     title="Create New Category"
                     value={newCategoryName}
@@ -344,11 +344,10 @@ function AdminHomePage() {
               <div
                 className="cat-card add-category"
                 onClick={() => setShowInput(true)}
-                style={{ display: "inline-block" }}
               >
                 <p>Add New Category</p>
                 <button
-                  className="create-new-btn"
+                  className="create-btn"
                   onClick={() => setShowInput(true)}
                 >
                   + Create New

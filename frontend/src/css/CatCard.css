@@ -285,7 +285,7 @@
 @media (max-width: 768px) {
   .cat-card {
     width: 110px;
-    height: 110px;
+    height: 125px;
     padding: 12px;
   }
 
@@ -310,7 +310,7 @@
 @media (max-width: 480px) {
   .cat-card {
     width: 100px;
-    height: 100px;
+    height: 125px;
     padding: 10px;
     margin-left: 8px;
   }
