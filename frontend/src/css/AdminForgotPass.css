@@ -44,10 +44,6 @@
   animation: fadeIn 0.5s ease;
 }
 
-.error-text{
-  color: red;
-}
-
 @keyframes fadeIn {
   from {
     opacity: 0;

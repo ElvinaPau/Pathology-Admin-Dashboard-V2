@@ -88,7 +88,7 @@ function AdminForgotPassword() {
               />
             </div>
 
-            {statusMessage && <p className="error-text">{statusMessage}</p>}
+            {statusMessage && <p className="error-text" style={{ color: "red" }}>{statusMessage}</p>}
 
             <button type="submit" className="forgotpass-btn" disabled={loading}>
               {loading ? "Sending..." : "SEND RESET LINK"}
