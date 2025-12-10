@@ -6,6 +6,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const authenticate = require("../middleware/authenticate");
+const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) throw new Error("JWT_SECRET not configured");
@@ -103,7 +104,7 @@ router.post("/forgot-password", async (req, res) => {
       [hashedToken, expiry, admin.id]
     );
 
-    const link = `http://localhost:5173/set-password/${rawToken}`;
+    const link = `${FRONTEND_URL}/set-password/${rawToken}`;
 
     try {
       await sendEmail(
@@ -378,7 +379,7 @@ router.put("/:id/status", async (req, res) => {
         [hashedToken, expiry, admin.id]
       );
 
-      const link = `http://localhost:5173/set-password/${rawToken}`;
+      const link = `${FRONTEND_URL}/set-password/${rawToken}`;
 
       try {
         sendEmail(
