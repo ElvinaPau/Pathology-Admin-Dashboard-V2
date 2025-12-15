@@ -46,6 +46,13 @@
   opacity: 0.8;
 }
 
+.logout-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+}
+
 .logout-button {
   padding: 10px 20px;
   margin-right: 30px;

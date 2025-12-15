@@ -47,9 +47,11 @@ function HomePageHeader() {
           </h3>
 
           {showLogoutMenu && (
-            <button onClick={handleLogout} className="logout-button">
-              Logout
-            </button>
+            <div className="logout-menu">
+              <button onClick={handleLogout} className="logout-button">
+                Logout
+              </button>
+            </div>
           )}
         </div>
       </div>
