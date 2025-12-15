@@ -60,16 +60,18 @@
 
 .logout-button {
   padding: 10px 20px;
+  margin-right: 30px;
   border: none;
-  background: none;
+  background: #8b5cf6;
+  color: white;
   cursor: pointer;
   width: 100%;
-  text-align: left;
   font-size: 14px;
 }
 
 .logout-button:hover {
-  background-color: #f5f5f5;
+  background: #7c3aed;
+  transform: translateY(-2px);
 }
 
 /* RESPONSIVE */
