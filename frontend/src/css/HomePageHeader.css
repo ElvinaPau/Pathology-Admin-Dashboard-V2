@@ -33,6 +33,44 @@
   color: #000;
   margin-right: 30px;
 }
+.username-container {
+  position: relative;
+}
+
+.username {
+  cursor: pointer;
+  user-select: none;
+}
+
+.username:hover {
+  opacity: 0.8;
+}
+
+.logout-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+}
+
+.logout-button {
+  padding: 10px 20px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  font-size: 14px;
+}
+
+.logout-button:hover {
+  background-color: #f5f5f5;
+}
 
 /* RESPONSIVE */
 @media (max-width: 1024px) {

@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { IoIosMenu } from "react-icons/io";
+import { useState } from "react";
 import HtaaQLogo from "../assets/HtaaQ-logo.png";
 import SideNav from "./SideNav";
 import "../css/HomePageHeader.css";
@@ -9,10 +10,16 @@ import { useAuth } from "../context/AuthContext";
 function HomePageHeader() {
   const navigate = useNavigate();
   const { isNavExpanded, setIsNavExpanded } = useNavigation();
-  const { admin } = useAuth(); // Admin from AuthContext
+  const { admin, logout } = useAuth(); // Get logout function from AuthContext
+  const [showLogoutMenu, setShowLogoutMenu] = useState(false);
 
   const handleLogoClick = () => {
     navigate("/home");
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
   };
 
   return (
@@ -31,7 +38,22 @@ function HomePageHeader() {
           />
         </div>
 
-        <h3 className="username">{admin ? admin.full_name : "Loading..."}</h3>
+        <div className="username-container">
+          <h3
+            className="username"
+            onClick={() => setShowLogoutMenu((prev) => !prev)}
+          >
+            {admin ? admin.full_name : "Loading..."}
+          </h3>
+
+          {showLogoutMenu && (
+            <div className="logout-menu">
+              <button onClick={handleLogout} className="logout-button">
+                Logout
+              </button>
+            </div>
+          )}
+        </div>
       </div>
       <SideNav isExpanded={isNavExpanded} />
     </>
