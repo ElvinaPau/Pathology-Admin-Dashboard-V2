@@ -65,13 +65,11 @@
   background: #8b5cf6;
   color: white;
   cursor: pointer;
-  width: 100%;
   font-size: 14px;
 }
 
 .logout-button:hover {
   background: #7c3aed;
-  transform: translateY(-2px);
 }
 
 /* RESPONSIVE */
