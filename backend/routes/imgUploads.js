@@ -79,7 +79,7 @@ router.post("/image", upload.single("image"), async (req, res) => {
 
     const imageUrl = urlData.publicUrl;
 
-    console.log("✓ Image uploaded to Supabase:", imageUrl);
+    console.log("Image uploaded to Supabase:", imageUrl);
 
     res.json({
       url: imageUrl,
