@@ -68,24 +68,34 @@ router.get("/", async (req, res) => {
 
     let query = `
       SELECT 
-        id,
-        name,
-        category_id AS "categoryId",
-        updated_by AS "updatedBy",
-        TO_CHAR(updated_at, 'YYYY-MM-DD HH24:MI:SS') AS "updatedAt",
-        TO_CHAR(created_at, 'YYYY-MM-DD HH24:MI:SS') AS "createdAt",
-        status
-      FROM tests
+        t.id,
+        t.name,
+        t.category_id AS "categoryId",
+        c.name AS "categoryName",
+        t.updated_by AS "updatedBy",
+        TO_CHAR(t.updated_at, 'YYYY-MM-DD HH24:MI:SS') AS "updatedAt",
+        TO_CHAR(t.created_at, 'YYYY-MM-DD HH24:MI:SS') AS "createdAt",
+        t.status
+      FROM tests t
+      JOIN categories c ON t.category_id = c.id
       WHERE 1=1
     `;
+
     const values = [];
 
     if (category_id) {
       values.push(category_id);
-      query += ` AND category_id = $1`;
+      query += ` AND t.category_id = $1`;
     }
 
-    query += " ORDER BY name ASC";
+    query += `
+      ORDER BY
+        CASE 
+          WHEN c.name = 'Introduction' THEN t.created_at
+          ELSE NULL
+        END ASC,
+        t.name ASC
+    `;
 
     const result = await pool.query(query, values);
     res.json(result.rows);

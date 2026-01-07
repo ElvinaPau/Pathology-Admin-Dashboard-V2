@@ -25,7 +25,9 @@ const TestTable = () => {
 
   const fetchTests = async () => {
     try {
-      const res = await axios.get(`${API_BASE}/api/tests?category_id=${id}`);
+      const res = await axios.get(
+        `${API_BASE}/api/tests?category_id=${id}`
+      );
       setTests(res.data);
     } catch (err) {
       console.error("Error fetching tests:", err);
@@ -49,26 +51,18 @@ const TestTable = () => {
   };
 
   // Filter tests by tab and search
-  const filteredTests = tests
-    .filter((test) => {
-      const matchesTab =
-        activeTab === "all"
-          ? test.status !== "deleted"
-          : activeTab === "recent"
-          ? test.status !== "deleted" && isRecent(test.updatedAt)
-          : test.status === "deleted";
-      const matchesSearch = test.name
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
-      return matchesTab && matchesSearch;
-    })
-    .sort((a, b) => {
-      // Only sort by createdAt for Introduction category
-      if (id?.toLowerCase() === "introduction") {
-        return new Date(a.createdAt) - new Date(b.createdAt);
-      }
-      return 0;
-    });
+  const filteredTests = tests.filter((test) => {
+    const matchesTab =
+      activeTab === "all"
+        ? test.status !== "deleted"
+        : activeTab === "recent"
+        ? test.status !== "deleted" && isRecent(test.updatedAt)
+        : test.status === "deleted";
+    const matchesSearch = test.name
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    return matchesTab && matchesSearch;
+  });
 
   // Actions
   const handleSoftDelete = async (id) => {
