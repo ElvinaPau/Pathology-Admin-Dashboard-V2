@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
 import "../css/TestTable.css";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const AdminTable = () => {
   const [admins, setAdmins] = useState([]);
@@ -175,7 +181,14 @@ const AdminTable = () => {
                   <td>{admin.department}</td>
                   <td>{admin.email}</td>
                   <td>{admin.notes}</td>
-                  <td>{admin.time}</td>
+                  <td>
+                    {admin.time
+                      ? dayjs
+                          .utc(admin.time)
+                          .tz("Asia/Kuala_Lumpur")
+                          .format("YYYY-MM-DD HH:mm:ss")
+                      : "-"}
+                  </td>
                   <td>
                     <select
                       className={getStatusClass(admin.status)}
