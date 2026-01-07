@@ -4,6 +4,12 @@ import "../css/TestTable.css";
 import { AiOutlineEdit } from "react-icons/ai";
 import { MdDeleteOutline, MdRestore, MdDeleteForever } from "react-icons/md";
 import { useNavigate, useParams } from "react-router-dom";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const TestTable = () => {
   const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5001";
@@ -25,9 +31,7 @@ const TestTable = () => {
 
   const fetchTests = async () => {
     try {
-      const res = await axios.get(
-        `${API_BASE}/api/tests?category_id=${id}`
-      );
+      const res = await axios.get(`${API_BASE}/api/tests?category_id=${id}`);
       setTests(res.data);
     } catch (err) {
       console.error("Error fetching tests:", err);
@@ -158,7 +162,14 @@ const TestTable = () => {
                 <td>{index + 1}</td>
                 <td>{test.name}</td>
                 <td>{test.updatedBy}</td>
-                <td>{test.updatedAt}</td>
+                <td>
+                  {test.updatedAt
+                    ? dayjs
+                        .utc(test.updatedAt)
+                        .tz("Asia/Kuala_Lumpur")
+                        .format("YYYY-MM-DD HH:mm:ss")
+                    : "-"}
+                </td>
                 <td>
                   <div className="action-icons">
                     {test.status === "deleted" ? (
