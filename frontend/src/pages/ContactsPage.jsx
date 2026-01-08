@@ -208,45 +208,43 @@ function ContactsPage() {
             <div className="prev-page-title">Contact Information</div>
           </div>
 
-          <div className="preview-info-card">
+          {/* Vertical card preview */}
+          <div className="preview-vertical-cards">
             {contacts.length > 0 ? (
-              contacts.map((contact, index) => (
-                <div key={index} className="contact-card">
-                  {/* Only show title if it exists */}
-                  {contact.fields.title.trim() && (
-                    <h2 className="contact-title">{contact.fields.title}</h2>
-                  )}
+              contacts.map((contact, index) => {
+                const c = contact.fields || {};
+                const imageSrc =
+                  c.image && typeof c.image === "string"
+                    ? c.image.startsWith("http")
+                      ? c.image
+                      : `${API_BASE}${c.image}`
+                    : null;
 
-                  {/* Description */}
-                  {contact.fields.description && (
-                    <div
-                      className="contact-description"
-                      dangerouslySetInnerHTML={{
-                        __html: contact.fields.description,
-                      }}
-                    />
-                  )}
+                return (
+                  <div key={index} className="preview-contact-card">
+                    {c.title?.trim() && (
+                      <h2 className="card-title">{c.title}</h2>
+                    )}
 
-                  {/* Image */}
-                  {contact.fields.image && (
-                    <div className="contact-image">
-                      <img
-                        src={
-                          contact.fields.image.startsWith("http")
-                            ? contact.fields.image
-                            : `${API_BASE}${contact.fields.image}`
-                        }
-                        alt="contact"
-                        style={{
-                          maxWidth: "250px",
-                          display: "block",
-                          marginTop: "10px",
-                        }}
+                    {c.description && (
+                      <div
+                        className="card-description rich-text-content"
+                        dangerouslySetInnerHTML={{ __html: c.description }}
                       />
-                    </div>
-                  )}
-                </div>
-              ))
+                    )}
+
+                    {imageSrc && (
+                      <div className="card-image">
+                        <img
+                          src={imageSrc}
+                          alt="contact"
+                          style={{ maxWidth: "250px", marginTop: "10px" }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                );
+              })
             ) : (
               <p>No contacts available</p>
             )}
