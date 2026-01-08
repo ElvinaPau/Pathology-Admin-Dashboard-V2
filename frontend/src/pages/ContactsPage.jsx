@@ -208,7 +208,7 @@ function ContactsPage() {
             <div className="prev-page-title">Contact Information</div>
           </div>
 
-          <div className="contacts-preview">
+          <div className="preview-info-card">
             {contacts.length > 0 ? (
               contacts.map((contact, index) => (
                 <div key={index} className="contact-card">

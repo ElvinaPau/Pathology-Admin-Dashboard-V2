@@ -27,13 +27,6 @@
   background-color: #0056b3;
 }
 
-.contacts-preview {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  margin-top: 20px;
-}
-
 .contact-card {
   padding: 15px;
   border: 1px solid #ddd;
