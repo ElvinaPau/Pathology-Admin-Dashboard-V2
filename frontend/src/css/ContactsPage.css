@@ -27,6 +27,14 @@
   background-color: #0056b3;
 }
 
+.prev-contact-header {
+  border-radius: 10px;
+  width: 400px;
+  margin: 20px auto;
+  padding-bottom: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
 .preview-contact-cards-container {
   padding: 16px;
   max-width: 500px;
