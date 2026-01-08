@@ -26,3 +26,33 @@
 .edit-btn:hover {
   background-color: #0056b3;
 }
+
+.contacts-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.contact-card {
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0px 2px 6px rgba(0,0,0,0.1);
+}
+
+.contact-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.contact-description {
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.contact-image img {
+  border-radius: 4px;
+}

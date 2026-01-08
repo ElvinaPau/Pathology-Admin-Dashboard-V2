@@ -108,12 +108,10 @@ function ContactsPage() {
       for (let i = 0; i < contacts.length; i++) {
         const c = contacts[i];
         const contactData = {
-          title: c.fields.title,
+          title: c.fields.title || "",
           description: c.fields.description,
           position: i + 1,
         };
-
-        if (!c.fields.title.trim()) continue;
 
         if (typeof c.id === "number") {
           await axios.put(`${API_URL}/${c.id}`, contactData);
@@ -124,7 +122,7 @@ function ContactsPage() {
       }
 
       alert("Contacts saved successfully!");
-      setIsPreviewMode(true); // show preview after save
+      setIsPreviewMode(true);
     } catch (err) {
       console.error("Error saving contacts:", err);
       alert("Failed to save contacts.");
@@ -210,23 +208,28 @@ function ContactsPage() {
             <div className="prev-page-title">Contact Information</div>
           </div>
 
-          <div className="test-info-details">
+          <div className="contacts-preview-grid">
             {contacts.length > 0 ? (
               contacts.map((contact, index) => (
-                <div key={index} className="extra-data">
-                  {contact.fields.title && <h2>{contact.fields.title}</h2>}
+                <div key={index} className="contact-card">
+                  {/* Only show title if it exists */}
+                  {contact.fields.title.trim() && (
+                    <h2 className="contact-title">{contact.fields.title}</h2>
+                  )}
 
+                  {/* Description */}
                   {contact.fields.description && (
                     <div
-                      className="rich-text-content"
+                      className="contact-description"
                       dangerouslySetInnerHTML={{
                         __html: contact.fields.description,
                       }}
                     />
                   )}
 
+                  {/* Image */}
                   {contact.fields.image && (
-                    <div className="image-section">
+                    <div className="contact-image">
                       <img
                         src={
                           contact.fields.image.startsWith("http")
