@@ -26,3 +26,9 @@
 .edit-btn:hover {
   background-color: #0056b3;
 }
+
+.preview-contact-cards-container {
+  padding: 16px;
+  max-width: 500px;
+  margin: 0 auto;
+}

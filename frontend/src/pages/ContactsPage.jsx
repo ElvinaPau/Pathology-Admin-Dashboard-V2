@@ -22,7 +22,7 @@ function ContactsPage() {
   const { isNavExpanded } = useNavigation();
 
   const [contacts, setContacts] = useState([]);
-  const [isPreviewMode, setIsPreviewMode] = useState(false);
+  const [isPreviewMode, setIsPreviewMode] = useState(true);
   const lastFormRef = useRef(null);
   const API_URL = `${API_BASE}/api/contacts`;
 
@@ -133,7 +133,65 @@ function ContactsPage() {
     <div className={`home-page-content ${isNavExpanded ? "Nav-Expanded" : ""}`}>
       <HomePageHeader />
 
-      {!isPreviewMode ? (
+      {isPreviewMode ? (
+        // Preview section
+        <div className="prev-header">
+          <div className="prev-header-title">
+            <div className="prev-page-title">Contact Information</div>
+          </div>
+
+          <div className="preview-contact-cards-container">
+            {contacts.length > 0 ? (
+              contacts.map((contact, index) => {
+                const c = contact.fields || {};
+                const imageSrc =
+                  c.image && typeof c.image === "string"
+                    ? c.image.startsWith("http")
+                      ? c.image
+                      : `${API_BASE}${c.image}`
+                    : null;
+
+                return (
+                  <div key={index} className="preview-info-card">
+                    {c.title?.trim() && (
+                      <h2 className="preview-card-title">{c.title}</h2>
+                    )}
+
+                    {c.description && (
+                      <div
+                        className="preview-card-section rich-text-content"
+                        dangerouslySetInnerHTML={{ __html: c.description }}
+                      />
+                    )}
+
+                    {imageSrc && (
+                      <div className="preview-card-section">
+                        <img
+                          src={imageSrc}
+                          alt="contact"
+                          style={{ maxWidth: "250px", marginTop: "10px" }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                );
+              })
+            ) : (
+              <p>No contacts available</p>
+            )}
+          </div>
+
+          <div className="preview-edit-btn-wrapper">
+            <button
+              className="save-all-btn"
+              onClick={() => setIsPreviewMode(false)}
+            >
+              Edit Contacts
+            </button>
+          </div>
+        </div>
+      ) : (
+        // Edit section
         <div className="form-page-wrapper">
           <div className="table-title">
             <div className="home-title">
@@ -199,65 +257,6 @@ function ContactsPage() {
                 Save & Preview
               </button>
             </div>
-          </div>
-        </div>
-      ) : (
-        // Preview section styled like PrevTestInfoPage
-        <div className="prev-header">
-          <div className="prev-header-title">
-            <div className="prev-page-title">Contact Information</div>
-          </div>
-
-          {/* Vertical card preview */}
-          <div className="preview-cards-container">
-            {contacts.length > 0 ? (
-              contacts.map((contact, index) => {
-                const c = contact.fields || {};
-                const imageSrc =
-                  c.image && typeof c.image === "string"
-                    ? c.image.startsWith("http")
-                      ? c.image
-                      : `${API_BASE}${c.image}`
-                    : null;
-
-                return (
-                  <div key={index} className="preview-info-card">
-                    {c.title?.trim() && (
-                      <h2 className="preview-card-title">{c.title}</h2>
-                    )}
-
-                    {c.description && (
-                      <div
-                        className="preview-card-section rich-text-content"
-                        dangerouslySetInnerHTML={{ __html: c.description }}
-                      />
-                    )}
-
-                    {imageSrc && (
-                      <div className="preview-card-section">
-                        <img
-                          src={imageSrc}
-                          alt="contact"
-                          style={{ maxWidth: "250px", marginTop: "10px" }}
-                        />
-                      </div>
-                    )}
-                  </div>
-                );
-              })
-            ) : (
-              <p>No contacts available</p>
-            )}
-          </div>
-
-          {/* Edit button at bottom */}
-          <div className="preview-edit-btn-wrapper">
-            <button
-              className="save-all-btn"
-              onClick={() => setIsPreviewMode(false)}
-            >
-              Edit Contacts
-            </button>
           </div>
         </div>
       )}
