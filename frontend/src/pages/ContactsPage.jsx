@@ -135,7 +135,7 @@ function ContactsPage() {
 
       {isPreviewMode ? (
         // Preview section
-        <div className="prev-header">
+        <div className="prev-contact-header">
           <div className="prev-header-title">
             <div className="prev-page-title">Contact Information</div>
           </div>
