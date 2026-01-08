@@ -181,14 +181,12 @@ function ContactsPage() {
             )}
           </div>
 
-          <div className="preview-edit-btn-wrapper">
             <button
               className="save-all-btn"
               onClick={() => setIsPreviewMode(false)}
             >
               Edit Contacts
             </button>
-          </div>
         </div>
       ) : (
         // Edit section
